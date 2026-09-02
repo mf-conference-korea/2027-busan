@@ -141,6 +141,12 @@ p:last-child{margin-bottom:0}
 .person .ko{color:var(--muted); font-size:15px; margin-left:8px; white-space:nowrap}
 .person .rl{color:var(--muted)}
 .tag{color:var(--muted); font-size:15px}
+/* sponsors: English name, Korean name beneath, one block per institution */
+.sponsors{list-style:none; margin:0; padding:0}
+.sponsors li{padding:9px 0; border-bottom:1px solid var(--rule-soft); line-height:1.35}
+.sponsors li:last-child{border-bottom:0; padding-bottom:0}
+.sponsors .nm{display:block; font-weight:600}
+.sponsors .ko{display:block; color:var(--muted); font-size:14.5px; margin-top:1px}
 a.tag{color:var(--muted)}
 a.tag:hover{color:var(--link)}
 .sep{color:var(--faint)}
@@ -285,7 +291,7 @@ footer .sep{margin:0 10px}
       <section class="blk"><h3>News</h3><ul class="news" id="news"></ul></section>
       <section class="blk"><h3>Main Organizers</h3><div id="organizers-lead"></div></section>
       <section class="blk">
-        <h3>Organizing Committee <span class="count" id="org-count"></span></h3>
+        <h3>Organizing Committee</h3>
         <div id="organizers"></div>
         <p class="foot-note" id="org-note"></p>
       </section>
@@ -294,8 +300,7 @@ footer .sep{margin:0 10px}
       <section class="blk"><h3>Contact</h3><dl class="kv" id="contact"></dl></section>
       <section class="blk">
         <h3>Sponsors and Supporting Institutions</h3>
-        <div id="sponsors"></div>
-        <p class="foot-note" id="spo-note"></p>
+        <ul class="sponsors" id="sponsors"></ul>
       </section>
     </aside>
   </div></section>
@@ -318,19 +323,18 @@ footer .sep{margin:0 10px}
     <div id="abstracts-body"></div>
   </section>
 
-  <!-- ═══════════════ ACCOMMODATION ═══════════════ -->
-  <section class="view" id="v-stay">
-    <div class="page-head"><h2>Accommodation</h2></div>
-    <div id="stay-body"></div>
-  </section>
-
-  <!-- ═══════════════ GETTING AROUND ═══════════════ -->
-  <section class="view" id="v-travel">
+  <!-- ═══════════════ VENUE: accommodation + getting around ═══════════════ -->
+  <section class="view" id="v-venue">
     <div class="page-head">
-      <h2>Getting Around</h2>
+      <h2>Venue</h2>
       <p>Gimhae International Airport (PUS) is Busan's gateway. Most overseas participants arrive at
-         Incheon (ICN) and connect onward — see the second section below.</p>
+         Incheon (ICN) and connect onward — see the airport sections below.</p>
     </div>
+
+    <section class="blk">
+      <h3>Accommodation</h3>
+      <div id="stay-body"></div>
+    </section>
 
     <section class="blk">
       <h3>Gimhae Airport to Haeundae</h3>
@@ -491,6 +495,7 @@ footer .sep{margin:0 10px}
 
 const CONF = {
   shortName : "2027 MF at Busan",
+  url       : "https://mf-conference-korea.github.io/2027-busan/",
   phrase    : "2027 Busan Conference",   // used in the "… for the 2027 Busan Conference" placeholders
 
   // ── The conference title has NOT been decided. Leave "" and the title block
@@ -557,7 +562,6 @@ const CONF = {
     { name:"UNIST",                                 ko:"울산과학기술원" },
     { name:"Yonsei University",                     ko:"연세대학교" }
   ],
-  sponsorNote: "The home institutions of the organizing committee, together with the National Research Foundation of Korea.",
 
   durations: {
     plenary : "50 min presentation, 10 min discussion",
@@ -612,12 +616,11 @@ const SCHEDULE = [
    ════════════════════════════════════════════════════════════════════════ */
 
 const PAGES = [
-  { id:"main",      label:"Main" },
+  { id:"main",      label:"Main", nav:false },   // reached via the site name
   { id:"speakers",  label:"Speakers" },
   { id:"program",   label:"Programme" },
-  { id:"abstracts", label:"Titles and Abstracts" },
-  { id:"stay",      label:"Accommodation" },
-  { id:"travel",    label:"Getting Around" },
+  { id:"abstracts", label:"Abstracts" },
+  { id:"venue",     label:"Venue" },
   { id:"poster",    label:"Poster" },
   { id:"past",      label:"Past Events" }
 ];
@@ -660,7 +663,7 @@ $("#foot-contact").innerHTML = `<a href="mailto:${esc(CONF.email)}">${esc(CONF.e
 
 /* ── nav ───────────────────────────────────────────────────────────── */
 const nav = $("#nav");
-PAGES.forEach(p => {
+PAGES.filter(p => p.nav !== false).forEach(p => {
   const a = el("a", null, esc(p.label));
   a.href = "#" + p.id; a.dataset.page = p.id;
   nav.appendChild(a);
@@ -687,17 +690,15 @@ const leads  = CONF.organizers.filter(o => o.lead);
 const others = CONF.organizers.filter(o => !o.lead);
 $("#organizers-lead").innerHTML = leads.map(o => personLine(o.name, o.affil, o.url)).join("");
 $("#organizers").innerHTML = others.map(o => personLine(o.name, o.affil, o.url)).join("");
-$("#org-count").textContent = CONF.organizers.length + " members in total";
 $("#org-note").textContent = CONF.organizerNote;
 if (!CONF.organizerNote) $("#org-note").remove();
 
 $("#sponsors").innerHTML = CONF.sponsors.map(s =>
-  `<p class="person"><span class="nm">${esc(s.name)}</span>${s.ko ? `<span class="ko">${esc(s.ko)}</span>` : ""}</p>`).join("");
-$("#spo-note").textContent = CONF.sponsorNote;
+  `<li><span class="nm">${esc(s.name)}</span>${s.ko ? `<span class="ko">${esc(s.ko)}</span>` : ""}</li>`).join("");
 
 $("#contact").innerHTML =
   `<dt>E-mail</dt><dd><a href="mailto:${esc(CONF.email)}">${esc(CONF.email)}</a></dd>
-   <dt>Website</dt><dd>${location.origin && location.origin !== "null" ? esc(location.origin + location.pathname) : "—"}</dd>`;
+   <dt>Website</dt><dd><a href="${esc(CONF.url)}">${esc(CONF.url.replace(/^https?:\/\//,""))}</a></dd>`;
 
 /* ── empty state ───────────────────────────────────────────────────── */
 function emptyState(what, say, how){
