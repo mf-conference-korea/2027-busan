@@ -4,3 +4,6 @@ STATUS.md
 node_modules/
 package.json
 package-lock.json
+past-*.JPG
+past-*.jpg
+poseters/

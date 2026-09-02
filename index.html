@@ -239,19 +239,21 @@ code{background:var(--tint); padding:1px 5px; border-radius:4px; font-family:ui-
 /* ── past events: one photo card per meeting ───────────────────────── */
 .past-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px}
 .pcard{
-  display:block; color:var(--ink); background:var(--card); border:1px solid var(--rule-soft);
+  color:var(--ink); background:var(--card); border:1px solid var(--rule-soft);
   border-radius:8px; box-shadow:var(--shadow); overflow:hidden;
-  transition:transform .15s ease, box-shadow .15s ease;
 }
-.pcard:hover{text-decoration:none; transform:translateY(-2px); box-shadow:0 2px 4px rgba(20,30,45,.06), 0 10px 24px rgba(20,30,45,.12)}
-.pcard .ph{display:block; width:100%; aspect-ratio:16/10; object-fit:cover; border-bottom:1px solid var(--rule-soft)}
+.pcard .ph{display:block; width:100%; aspect-ratio:2/1; object-fit:cover; border-bottom:1px solid var(--rule-soft)}
 .pcard .ph-none{background:var(--accent); color:var(--accent-ink); display:flex; align-items:center; justify-content:center}
 .pcard .ph-none span{font-size:54px; font-weight:600; letter-spacing:-.02em; opacity:.35}
-.pcard .pb{padding:16px 20px 18px}
+.pcard .pb{padding:16px 18px 18px; display:flex; gap:16px; align-items:flex-start}
+.pcard .pp{flex-shrink:0; width:84px; border:1px solid var(--rule); border-radius:3px; overflow:hidden; background:var(--tint); box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.pcard .pp img{display:block; width:100%; aspect-ratio:1/1.414; object-fit:cover}
+.pcard .pp:hover{border-color:var(--link)}
+.pcard .pt{flex:1; min-width:0}
 .pcard .py{color:var(--link); font-weight:600; font-size:14px; letter-spacing:.06em}
-.pcard .pn{font-weight:600; font-size:17px; line-height:1.35; margin-top:4px}
-.pcard .pm{color:var(--muted); font-size:15px; margin-top:6px}
-.pcard .pg{color:var(--link); font-size:15px; font-weight:600; margin-top:12px}
+.pcard .pn{font-weight:600; font-size:16.5px; line-height:1.35; margin-top:3px}
+.pcard .pm{color:var(--muted); font-size:14.5px; line-height:1.45; margin-top:6px}
+.pcard .pg{font-size:15px; font-weight:600; margin-top:10px}
 
 footer{border-top:1px solid var(--rule-soft)}
 footer .wrap{padding-top:22px; padding-bottom:44px; color:var(--muted); font-size:15px}
@@ -582,18 +584,21 @@ const CONF = {
     invited : "30 min presentation, 10 min discussion"
   },
 
-  // ── Past meetings, newest first. `photo` is a file next to index.html
-  //    (e.g. "past-2026.jpg", landscape, about 1200×750); leave "" and a
-  //    plain block with the year is shown instead.
+  // ── Past meetings, newest first. `photo` is the group photo (landscape,
+  //    about 2:1, ~1600px wide) and `poster` the poster image, both under
+  //    img/. Leave either "" and that part of the card is simply omitted.
   past: [
     { year:"2026", name:"Jeju Conference on Mathematical Finance and Related Topics",
-      dates:"May 30 – June 3, 2026", venue:"The Suites Hotel, Jeju", photo:"",
+      dates:"May 30 – June 3, 2026", venue:"The Suites Hotel, Jeju",
+      photo:"img/past-2026.jpg", poster:"img/poster-2026.jpg",
       url:"https://sites.google.com/view/2026-workshop-math-finance/" },
     { year:"2025", name:"Workshop on Mathematical Finance at Seoul",
-      dates:"May 24 – 28, 2025", venue:"Seoul National University", photo:"",
+      dates:"May 24 – 28, 2025", venue:"Seoul National University",
+      photo:"img/past-2025.jpg", poster:"img/poster-2025.jpg",
       url:"https://sites.google.com/view/2025-workshop-mf-seoul/" },
     { year:"2024", name:"Workshop on Mathematical Finance at Jeju",
-      dates:"May 30 – June 3, 2024", venue:"Suites Hotel Jeju", photo:"",
+      dates:"May 30 – June 3, 2024", venue:"Suites Hotel Jeju",
+      photo:"img/past-2024.jpg", poster:"img/poster-2024.jpg",
       url:"https://sites.google.com/khu.ac.kr/2024-workshop-mf-jeju/" }
   ]
 };
@@ -891,17 +896,20 @@ $("#poster-body").innerHTML = emptyState("A poster",
 
 /* ── past events ───────────────────────────────────────────────────── */
 $("#past").innerHTML = CONF.past.map(e => `
-  <a class="pcard" href="${esc(e.url)}" target="_blank" rel="noopener">
+  <div class="pcard">
     ${e.photo
-      ? `<img class="ph" src="${esc(e.photo)}" alt="${esc(e.name)}">`
+      ? `<a href="${esc(e.url)}" target="_blank" rel="noopener"><img class="ph" src="${esc(e.photo)}" alt="Group photo, ${esc(e.name)}" loading="lazy"></a>`
       : `<div class="ph ph-none"><span>${esc(e.year)}</span></div>`}
     <div class="pb">
-      <div class="py">${esc(e.year)}</div>
-      <div class="pn">${esc(e.name)}</div>
-      <div class="pm">${esc(e.dates)}${e.venue ? ` · ${esc(e.venue)}` : ""}</div>
-      <div class="pg">Website →</div>
+      ${e.poster ? `<a class="pp" href="${esc(e.poster)}" target="_blank" rel="noopener"><img src="${esc(e.poster)}" alt="Poster, ${esc(e.name)}" loading="lazy"></a>` : ""}
+      <div class="pt">
+        <div class="py">${esc(e.year)}</div>
+        <div class="pn">${esc(e.name)}</div>
+        <div class="pm">${esc(e.dates)}${e.venue ? `<br>${esc(e.venue)}` : ""}</div>
+        <div class="pg"><a href="${esc(e.url)}" target="_blank" rel="noopener">Website</a>${e.poster ? ` <span class="sep">·</span> <a href="${esc(e.poster)}" target="_blank" rel="noopener">Poster</a>` : ""}</div>
+      </div>
     </div>
-  </a>`).join("");
+  </div>`).join("");
 
 /* ── copy-to-clipboard ─────────────────────────────────────────────── */
 document.querySelectorAll(".copy").forEach(b => b.addEventListener("click", async () => {
