@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>2027 MF at Busan</title>
+<meta name="description" content="May 31 – June 3, 2027. Haeundae, Busan, Republic of Korea.">
+<meta property="og:title" content="2027 MF at Busan">
+<meta property="og:description" content="May 31 – June 3, 2027 — Haeundae, Busan, Korea.">
+<meta property="og:type" content="website">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' fill='%23ffffff'/><text x='32' y='46' font-family='Georgia,serif' font-style='italic' font-size='40' fill='%23000000' text-anchor='middle'>MF</text></svg>">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=EB+Garamond:ital,wght@0,400..600;1,400..500&display=swap" rel="stylesheet">
+
+<!-- ═══════════════════════════════════════════════════════════════════════
+     2027 Busan Conference on Mathematical Finance and Related Topics
+
+     Self-contained static site — one file, no external assets. Deploy by
+     dropping it into any web host (GitHub Pages, Netlify, university web
+     space, or a Google Sites "Embed code" block).
+
+     ▸ TO EDIT CONTENT: scroll to the DATA BLOCK near the bottom.
+       The programme grid, the daily schedule, the speaker list and the
+       abstracts — including the links between them — are all generated
+       from that single object. Edit it in one place and every view stays
+       consistent.
+     ═══════════════════════════════════════════════════════════════════════ -->
+
+<style>
+/* ── tokens ────────────────────────────────────────────────────────────
+   Black ink on white paper, with a mirrored dark variant that follows the
+   reader's system setting. Every colour on the site is one of these tokens,
+   so the two schemes cannot drift apart.
+   ──────────────────────────────────────────────────────────────────── */
+:root{
+  color-scheme:light dark;
+  /* every text colour clears WCAG AA (4.5:1) against --paper */
+  --ink:#0d0d0c; --ink-2:#1e1e1c; --muted:#4a4944; --faint:#6b6a63;
+  --ghost:#8d8b84;                 /* placeholder text only, never body copy */
+  --rule:#c4c2b9; --rule-soft:#e3e1d9;
+  --paper:#fdfdfb; --tint:#f3f2ed;
+  --link:#00429d;
+  --serif:"EB Garamond",Georgia,"Iowan Old Style","Palatino Linotype",Palatino,
+          "Nanum Myeongjo",AppleMyungjo,Batang,serif;
+  /* a second, higher-contrast face carries every heading */
+  --display:"Cormorant Garamond","EB Garamond",Georgia,"Nanum Myeongjo",serif;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --ink:#f0efec; --ink-2:#e0ded9; --muted:#b3b0a8; --faint:#96938b;
+    --ghost:#6b6862;
+    --rule:#43423f; --rule-soft:#2d2d2b;
+    --paper:#0f0f0e; --tint:#1b1b1a;
+    --link:#8fb2e0;
+  }
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; background:var(--paper); color:var(--ink);
+  font:19px/1.72 var(--serif);
+  font-variant-numeric:oldstyle-nums proportional-nums;
+  font-kerning:normal; font-variant-ligatures:common-ligatures;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+a{color:var(--link); text-decoration:none}
+a:hover{text-decoration:underline; text-underline-offset:2px}
+h1,h2,h3,h4{margin:0; font-weight:400; line-height:1.24}
+i,em,cite{font-style:italic}
+
+.wrap{max-width:720px; margin:0 auto; padding:0 30px}
+
+/* ══ THE TITLE PAGE — this is where all the ornament lives ═══════════
+   Everything else on the site is deliberately plain furniture.
+   ══════════════════════════════════════════════════════════════════ */
+.masthead{padding:104px 0 0; text-align:center}
+.masthead .series{
+  font-size:12px; letter-spacing:.34em; text-transform:uppercase;
+  color:var(--faint); margin-bottom:44px;
+}
+.masthead h1{
+  font-family:var(--display);      /* display face: large sizes only */
+  font-size:clamp(46px,9.2vw,88px); font-weight:400;
+  line-height:1.0; letter-spacing:-.018em; max-width:13ch; margin:0 auto;
+}
+.masthead h1 .untitled{color:var(--ghost); font-style:italic; font-weight:300}
+/* a single hairline under the title — no ornament */
+.masthead .swash{width:88px; height:1px; background:var(--rule); margin:44px auto 0}
+.masthead .dates{
+  margin-top:34px; font-size:clamp(21px,3vw,27px); font-style:italic;
+  letter-spacing:-.006em;
+}
+.masthead .place{margin-top:9px; font-size:16.5px; color:var(--muted)}
+.masthead .pending{margin-top:26px; font-style:italic; color:var(--faint); font-size:16px}
+.rule{border:0; border-top:1px solid var(--rule); margin:64px 0 0}
+
+/* ── nav: plain furniture ──────────────────────────────────────────── */
+.nav{
+  position:sticky; top:0; z-index:50; background:var(--paper);
+  border-bottom:1px solid var(--rule);
+}
+.nav .wrap{
+  display:flex; gap:26px; justify-content:center;
+  overflow-x:auto; scrollbar-width:none;
+}
+.nav .wrap::-webkit-scrollbar{display:none}
+.nav a{
+  padding:13px 0 11px; font-size:16px; color:var(--muted);
+  white-space:nowrap; border-bottom:1px solid transparent;
+}
+.nav a:hover{color:var(--ink); text-decoration:none}
+.nav a.on{color:var(--ink); border-bottom-color:var(--ink)}
+
+/* ── layout: plain furniture ───────────────────────────────────────── */
+main{padding:56px 0 110px}
+.view{display:none}
+.view.on{display:block}
+.page-head{margin-bottom:38px}
+.page-head h2{
+  font-family:var(--display);      /* display face: large sizes only */
+  font-size:clamp(34px,5vw,44px); font-weight:400; letter-spacing:-.012em;
+}
+/* Multi-line explanatory text is set roman, not italic — long italic runs
+   are measurably slower to read. Italic is kept for short spans only. */
+.page-head p{color:var(--muted); margin:16px 0 0; max-width:56ch}
+.lede{color:var(--muted); margin:0 0 32px; max-width:56ch}
+
+/* Section headings stay in the text face — Cormorant is a display face and
+   loses legibility below about 30px, so it is never used at small sizes. */
+section.blk{margin-bottom:48px}
+section.blk > h3{
+  font-size:19px; font-weight:500; color:var(--ink);
+  padding-bottom:8px; border-bottom:1px solid var(--rule-soft); margin-bottom:18px;
+  display:flex; justify-content:space-between; align-items:baseline; gap:16px;
+}
+section.blk > h3 .count{font-size:15px; font-weight:400; font-style:italic; color:var(--faint)}
+
+h4.sub{font-style:italic; font-size:18px; margin:30px 0 8px}
+h4.sub:first-of-type{margin-top:8px}
+p{margin:0 0 14px}
+p:last-child{margin-bottom:0}
+
+/* ── people, set as lines of a programme rather than table rows ────── */
+.person{margin:0 0 10px; line-height:1.6}
+.person .nm{font-weight:500}
+.person .af{color:var(--muted)}
+.person .ko{color:var(--muted); font-size:16px; margin-left:9px}
+.person .rl{color:var(--muted)}
+.tag{color:var(--muted); font-size:16px}
+a.tag{color:var(--muted)}
+a.tag:hover{color:var(--link)}
+.sep{color:var(--faint)}
+
+/* ── programme grid ────────────────────────────────────────────────── */
+.legend{color:var(--muted); font-size:16.5px; margin-bottom:16px; line-height:1.65; max-width:62ch}
+.scroller{overflow-x:auto}
+table.grid{border-collapse:collapse; width:100%; min-width:620px; font-size:15px}
+table.grid th, table.grid td{border:1px solid var(--rule-soft); padding:9px 10px; text-align:center}
+table.grid thead th{border-bottom:1px solid var(--rule); font-weight:400; font-style:italic; padding:6px 10px 9px}
+table.grid thead th .dow{display:block; font-size:13.5px; color:var(--faint); font-style:normal}
+table.grid td.t{color:var(--faint); font-size:14px; width:62px; border-left:0; text-align:right; padding-right:14px}
+table.grid td a{color:var(--ink)}
+table.grid td a:hover{color:var(--link)}
+td.k-plenary{border-top:1.5px solid var(--ink) !important; border-bottom:1.5px solid var(--ink) !important}
+td.soft{background:var(--tint); color:var(--muted); font-style:italic}
+td.empty{border-color:var(--rule-soft)}
+
+/* ── daily schedule ────────────────────────────────────────────────── */
+.day{margin-bottom:32px}
+.day-head{
+  display:flex; align-items:baseline; gap:12px;
+  padding-bottom:6px; border-bottom:1px solid var(--rule-soft); margin-bottom:12px;
+}
+.day-head .d{font-size:19px}
+.day-head .dw{font-style:italic; color:var(--faint); font-size:16px}
+.day-head .dn{margin-left:auto; font-style:italic; color:var(--faint); font-size:15px}
+.slot{display:flex; gap:20px; align-items:baseline; margin-bottom:9px; line-height:1.6}
+.slot .tm{color:var(--faint); font-size:15px; width:52px; flex-shrink:0; text-align:right}
+.slot .bd2{flex:1; min-width:0}
+.slot .sub{font-style:italic; color:var(--muted); font-size:16px}
+.slot .kd{flex-shrink:0}
+.slot.soft .ti{font-style:italic; color:var(--muted)}
+
+/* ── abstracts ─────────────────────────────────────────────────────── */
+.abs{border-bottom:1px solid var(--rule-soft)}
+.abs:last-child{border-bottom:0}
+.abs:target > summary, .abs.hi > summary{background:var(--tint)}
+.abs > summary{
+  cursor:pointer; list-style:none; padding:14px 10px 14px 0;
+  display:flex; gap:20px; align-items:baseline;
+}
+.abs > summary::-webkit-details-marker{display:none}
+.abs > summary:hover .atitle{color:var(--link)}
+.abs .atitle{font-size:18px; line-height:1.4}
+.abs .ameta{font-style:italic; color:var(--muted); font-size:16px; margin-top:2px}
+.abs .aright{margin-left:auto; text-align:right; flex-shrink:0; line-height:1.5}
+.abs .abody{padding:0 0 22px; color:var(--ink-2); max-width:64ch}
+.abs .abody .co{font-style:italic; color:var(--muted)}
+
+/* ── misc ──────────────────────────────────────────────────────────── */
+.news{list-style:none; padding:0; margin:0}
+.news li{display:flex; gap:22px; margin-bottom:12px; line-height:1.65}
+.news .dt{color:var(--muted); font-size:16.5px; white-space:nowrap; flex-shrink:0; width:136px}
+ul.plain{margin:0; padding-left:22px}
+ul.plain li{margin:9px 0}
+.kv{display:grid; grid-template-columns:auto 1fr; gap:6px 22px; align-items:baseline; margin:0 0 18px}
+.kv dt{color:var(--muted); white-space:nowrap}
+.kv dd{margin:0}
+table.info{border-collapse:collapse; width:100%; font-size:16px; min-width:500px}
+table.info th{
+  text-align:left; font-weight:500; color:var(--ink);
+  padding:0 18px 8px 0; border-bottom:1px solid var(--rule);
+}
+table.info td{padding:11px 18px 11px 0; border-bottom:1px solid var(--rule-soft); vertical-align:top; line-height:1.6}
+table.info tr:last-child td{border-bottom:0}
+.note{border-left:2px solid var(--rule); padding:0 0 0 18px; color:var(--muted); font-size:17px; margin:22px 0 0; line-height:1.7}
+.note b{color:var(--ink); font-weight:500}
+.foot-note{color:var(--muted); font-size:16.5px; margin-top:16px; line-height:1.7; max-width:60ch}
+.copy{
+  display:inline-block; background:transparent; border:1px solid var(--rule);
+  padding:8px 15px; font:inherit; font-size:16px; cursor:pointer; color:var(--ink); margin-top:10px;
+}
+.copy:hover{border-color:var(--ink)}
+.copy .ic{font-style:italic; color:var(--faint); font-size:14.5px; margin-left:9px}
+code{background:var(--tint); padding:1px 5px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:14px}
+
+/* ── empty state ───────────────────────────────────────────────────── */
+.empty{border:1px dashed var(--rule); padding:60px 24px; text-align:center}
+.empty .lbl{font-style:italic; color:var(--muted); font-size:16.5px; margin-bottom:18px}
+.empty .ttl{font-size:24px; line-height:1.36; max-width:24ch; margin:0 auto; color:var(--ink-2)}
+.empty .say{color:var(--muted); margin:16px auto 0; max-width:50ch; line-height:1.7}
+.empty .how{color:var(--muted); font-size:16.5px; margin:26px auto 0; max-width:56ch; line-height:1.7}
+
+.evt{display:flex; align-items:baseline; gap:18px; margin-bottom:12px; line-height:1.6}
+.evt .yr{color:var(--faint); width:44px; flex-shrink:0}
+.evt .ed{font-style:italic; color:var(--muted); font-size:16px}
+.evt .go{margin-left:auto; flex-shrink:0}
+
+footer{border-top:1px solid var(--rule); margin-top:70px}
+footer .wrap{padding-top:24px; padding-bottom:52px; color:var(--muted); font-size:16px}
+footer .sep{margin:0 12px; font-style:normal}
+
+@media(max-width:640px){
+  body{font-size:17.5px}
+  .wrap{padding:0 22px}
+  .masthead{padding-top:62px}
+  .masthead .series{margin-bottom:30px; font-size:10.5px; letter-spacing:.24em}
+  .masthead h1{max-width:none}
+  .masthead .swash{margin-top:38px; max-width:190px; gap:16px}
+  .masthead .dates{margin-top:26px}
+  .rule{margin-top:44px}
+  .nav .wrap{justify-content:flex-start; gap:22px}
+  main{padding:40px 0 72px}
+  section.blk{margin-bottom:40px}
+  .empty{padding:48px 16px}
+  .news li{flex-direction:column; gap:0}
+  .news .dt{width:auto}
+  .slot{gap:14px}
+  .slot .tm{width:46px}
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="wrap">
+    <div class="series">Workshop Series on Mathematical Finance</div>
+    <h1 id="mast-title"></h1>
+    <div class="swash"></div>
+    <div id="mast-sub"></div>
+    <hr class="rule">
+  </div>
+</header>
+
+<nav class="nav"><div class="wrap" id="nav"></div></nav>
+
+<main><div class="wrap">
+
+  <!-- ═══════════════ MAIN ═══════════════ -->
+  <section class="view" id="v-main">
+    <section class="blk"><h3>About</h3><div id="about"></div></section>
+    <section class="blk"><h3>News</h3><ul class="news" id="news"></ul></section>
+    <section class="blk"><h3>Main Organizers</h3><div id="organizers-lead"></div></section>
+    <section class="blk">
+      <h3>Organizing Committee <span class="count" id="org-count"></span></h3>
+      <div id="organizers"></div>
+      <p class="foot-note" id="org-note"></p>
+    </section>
+    <section class="blk">
+      <h3>Sponsors and Supporting Institutions</h3>
+      <div id="sponsors"></div>
+      <p class="foot-note" id="spo-note"></p>
+    </section>
+    <section class="blk"><h3>Contact</h3><dl class="kv" id="contact"></dl></section>
+  </section>
+
+  <!-- ═══════════════ SPEAKERS ═══════════════ -->
+  <section class="view" id="v-speakers">
+    <div class="page-head"><h2>Speakers</h2></div>
+    <div id="speakers-body"></div>
+  </section>
+
+  <!-- ═══════════════ PROGRAMME ═══════════════ -->
+  <section class="view" id="v-program">
+    <div class="page-head"><h2>Programme</h2></div>
+    <div id="program-body"></div>
+  </section>
+
+  <!-- ═══════════════ ABSTRACTS ═══════════════ -->
+  <section class="view" id="v-abstracts">
+    <div class="page-head"><h2>Titles and Abstracts</h2></div>
+    <div id="abstracts-body"></div>
+  </section>
+
+  <!-- ═══════════════ ACCOMMODATION ═══════════════ -->
+  <section class="view" id="v-stay">
+    <div class="page-head"><h2>Accommodation</h2></div>
+    <div id="stay-body"></div>
+  </section>
+
+  <!-- ═══════════════ GETTING AROUND ═══════════════ -->
+  <section class="view" id="v-travel">
+    <div class="page-head">
+      <h2>Getting Around</h2>
+      <p>Gimhae International Airport (PUS) is Busan's gateway. Most overseas participants arrive at
+         Incheon (ICN) and connect onward — see the second section below.</p>
+    </div>
+
+    <section class="blk">
+      <h3>Gimhae Airport to Haeundae</h3>
+      <div class="scroller" style="margin-bottom:6px">
+        <table class="info">
+          <thead><tr><th>Option</th><th>Travel time</th><th>Approx. cost</th><th>Best for</th></tr></thead>
+          <tbody>
+            <tr><td>Airport limousine (No.&nbsp;1 / route 7100)</td><td>70–90 min</td><td>KRW 9,500</td><td>Travellers with luggage</td></tr>
+            <tr><td>Taxi</td><td>50–70 min</td><td>KRW 35,000–45,000</td><td>Groups, late arrivals</td></tr>
+            <tr><td>Light rail and Metro Line 2</td><td>75–90 min</td><td>KRW 2,100–2,500</td><td>Budget, light luggage</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h4 class="sub">1. Airport limousine <span class="tag">(recommended)</span></h4>
+      <ul class="plain">
+        <li>Board at <b>Platform 3, Floor 1</b> of either the International or the Domestic terminal.
+            Signed <i>Airport Limousine No. 1 (Haeundae · Gijang line)</i>; shown as route
+            <b>7100</b> in Naver Map and KakaoMap.</li>
+        <li><b>Fare KRW 9,500</b> (adult). <b>Card only — cash is not accepted.</b> Transport cards
+            (T-money, Cashbee) and most credit cards work.</li>
+        <li>Departures from the International terminal run roughly <b>07:10–21:40</b>, about
+            21 services a day, headway around 60 minutes. If you land after 22:00, take a taxi.</li>
+        <li>Haeundae-bound stops include Shinsegae Centum City, BEXCO, the yacht marina,
+            Park Hyatt Busan, Hanwha Resort, Dongbaekseom entrance, Haeundae Beach and Jangsan Station.</li>
+        <li>Two suitcases per person (30 kg total) go in the luggage hold at no charge. Seats are
+            unassigned. Advance booking through the Bustago app or the terminal ticket machine.</li>
+        <li>The limousine is <b>not eligible</b> for the metro and bus transfer discount.</li>
+      </ul>
+
+      <h4 class="sub">2. Taxi</h4>
+      <ul class="plain">
+        <li>Official rank on the arrivals floor; the Kakao T app (English interface) also works.</li>
+        <li>About <b>30–35 km, 50–70 minutes</b>. Metered fare typically <b>KRW 35,000–45,000</b>
+            including the Gwangan Bridge toll of KRW 1,000.</li>
+        <li><b>Night surcharge 23:00–04:00</b>: 30 per cent between 24:00 and 02:00, 20 per cent
+            otherwise. Gimhae Airport lies inside Busan city limits, so no out-of-area surcharge applies.</li>
+        <li>Insist on the meter, or book through Kakao T so the fare is recorded.</li>
+      </ul>
+
+      <h4 class="sub">3. Light rail and metro</h4>
+      <ul class="plain">
+        <li>Walk to <b>Gimhae Int'l Airport Station</b> on the Busan–Gimhae Light Rail, adjacent to the
+            Domestic terminal. A free shuttle links the two terminals every 12 minutes, 05:00–22:48.</li>
+        <li>Light rail to <b>Sasang</b> (3 stops), transfer to <b>Metro Line 2</b>, then to
+            <b>Haeundae Station</b> (24 stops). One transfer, roughly 75–90 minutes door to door.</li>
+        <li>Fare approximately <b>KRW 2,100–2,500</b> with a transport card, including the KRW 500
+            light-rail-to-metro transfer supplement.</li>
+      </ul>
+      <p class="foot-note">City bus 307 also runs airport to Haeundae without a transfer, but takes over
+         100 minutes and Busan city buses limit luggage to roughly carry-on size — not recommended.
+         The former express bus 2029 was discontinued in July 2025.</p>
+    </section>
+
+    <section class="blk">
+      <h3>Incheon Airport to Busan</h3>
+
+      <h4 class="sub">Option A — domestic flight via Gimpo <span class="tag">(fastest)</span></h4>
+      <ul class="plain">
+        <li>Take the <b>AREX all-stop train</b> from ICN to <b>Gimpo Airport Station</b> (35–45 minutes),
+            which connects underground directly to the domestic terminal.
+            <b>Do not take the AREX Express</b> — it runs non-stop to Seoul Station.</li>
+        <li>Gimpo (GMP) to Gimhae (PUS): about <b>25 flights a day</b>, flight time around 1 h 5 min
+            (Air Busan, Asiana, Jin Air and others).</li>
+        <li>Domestic check-in closes 30–40 minutes before departure. Allow <b>at least four hours</b>
+            between your international arrival and the domestic departure.</li>
+      </ul>
+
+      <h4 class="sub">Option B — KTX via Seoul Station</h4>
+      <ul class="plain">
+        <li><b>AREX Express</b>, ICN to Seoul Station, non-stop, 43–51 minutes, flat fare KRW 13,000.
+            The KTX platforms are inside the same station.</li>
+        <li><b>KTX Seoul to Busan</b>: 2 h 17 min to 3 h 22 min, around 70 departures a day, first
+            about 05:13, last about 22:49. Standard class approximately KRW 59,800–72,600.</li>
+        <li>Book at <a href="https://www.letskorail.com" target="_blank" rel="noopener">Letskorail</a>
+            or through the Korail Talk app. A foreigner-only KORAIL PASS is available.</li>
+        <li>Total ICN to Busan Station: <b>about 3 h 40 min</b>, excluding baggage claim.</li>
+      </ul>
+
+      <p class="foot-note">A direct intercity coach runs ICN to Haeundae 16 times a day, but takes
+         about six hours — worth knowing about only for very late arrivals. Korean Air's ICN–PUS leg
+         exists but is sold solely as a connection on a Korean Air international ticket; there is no
+         separately bookable ICN–PUS domestic flight.</p>
+    </section>
+
+    <section class="blk">
+      <h3>Busan Station to Haeundae</h3>
+      <ul class="plain">
+        <li><b>Metro.</b> Line 1 to <b>Seomyeon</b> (transfer, allow 5–8 minutes on foot), then Line 2
+            to <b>Haeundae Station</b>. Total roughly <b>55–65 minutes</b>, fare about KRW 1,800–2,100.</li>
+        <li><b>Taxi.</b> About 20 km, <b>30–40 minutes</b>, approximately <b>KRW 20,000–25,000</b>
+            including the Gwangan Bridge toll.</li>
+      </ul>
+    </section>
+
+    <section class="blk">
+      <h3>Practical Notes</h3>
+      <ul class="plain">
+        <li><b>Transport cards.</b> T-money and Cashbee both work throughout Busan, including transfer
+            discounts — a card bought in Seoul is fine. Buy or top up at any convenience store
+            (CU, GS25, 7-Eleven, emart24) or at station machines.</li>
+        <li><b>Maps.</b> Google Maps cannot provide walking or driving navigation in Korea. Install
+            <b>Naver Map</b> or <b>KakaoMap</b> — both switch to English in settings, and both show
+            live positions for airport limousine route 7100.</li>
+        <li><b>Taxis.</b> Kakao T is the standard hailing app; the interface is available in English and
+            foreign cards can be registered, or choose "Pay to Driver". Uber and UT also operate in
+            Busan, with fewer drivers.</li>
+        <li><b>Fares.</b> Metro KRW 1,600 up to 10 km and KRW 1,800 beyond, by card; city bus KRW 1,550.
+            Transfers are free within 30 minutes, up to twice — tag your card when you alight.</li>
+        <li><b>Help in English.</b> Korea Travel Hotline <b>1330</b>, 24 hours, with interpretation;
+            Busan city call centre <b>051-120</b>.</li>
+      </ul>
+
+      <p style="margin:22px 0 0; font-style:italic; color:var(--muted)">Show a driver the venue address:</p>
+      <button class="copy" data-copy="TBA — 부산광역시 해운대구">
+        부산광역시 해운대구 …<span class="ic">venue TBA — click to copy</span>
+      </button>
+
+      <div class="note">
+        <b>Please re-verify before travelling.</b> Information compiled September 2026. Gimhae airport
+        limousine services were restructured three times between 2024 and 2026, and metro fares have
+        risen twice since 2023. Timetables and fares will be re-checked and this page updated closer to
+        the conference. Live bus information:
+        <a href="https://bus.busan.go.kr" target="_blank" rel="noopener">bus.busan.go.kr</a>.
+      </div>
+    </section>
+  </section>
+
+  <!-- ═══════════════ POSTER ═══════════════ -->
+  <section class="view" id="v-poster">
+    <div class="page-head"><h2>Poster</h2></div>
+    <div id="poster-body"></div>
+  </section>
+
+  <!-- ═══════════════ PAST EVENTS ═══════════════ -->
+  <section class="view" id="v-past">
+    <div class="page-head"><h2>Past Events</h2></div>
+    <section class="blk">
+      <h3>Previous Meetings <span class="count" id="pe-count"></span></h3>
+      <div id="past"></div>
+    </section>
+  </section>
+
+</div></main>
+
+<footer><div class="wrap">
+  <span id="foot-title"></span><span class="sep">·</span><span id="foot-updated"></span><span class="sep">·</span><span id="foot-contact"></span>
+</div></footer>
+
+<script>
+/* ════════════════════════════════════════════════════════════════════════
+   ██  DATA BLOCK — EDIT EVERYTHING BELOW THIS LINE  ██
+   ════════════════════════════════════════════════════════════════════════
+   All pages are generated from these objects. Add a speaker once and they
+   appear on the Speakers page, in the programme, and in the abstracts list,
+   correctly cross-linked.
+   ════════════════════════════════════════════════════════════════════════ */
+
+const CONF = {
+  shortName : "2027 MF at Busan",
+  phrase    : "2027 Busan Conference",   // used in the "… for the 2027 Busan Conference" placeholders
+
+  // ── The conference title has NOT been decided. Leave "" and the masthead
+  //    shows a placeholder; fill it in and the placeholder disappears.
+  //    For reference, earlier meetings in the series were called:
+  //      2026  Jeju Conference on Mathematical Finance and Related Topics
+  //      2025  Workshop on Mathematical Finance at Seoul
+  //      2024  Workshop on Mathematical Finance at Jeju
+  title     : "",
+
+  dates     : "May 31 – June 3, 2027",
+  venue     : "Haeundae, Busan",           // ← update when the hotel is confirmed
+  venueFull : "Venue to be announced · Haeundae-gu, Busan, Republic of Korea",
+  country   : "Republic of Korea",
+  email     : "2027.math.finance.pusan@gmail.com",
+  updated   : "September 2026",
+
+  about: [
+    "The conference will be held in the Haeundae district of Busan, Republic of Korea, with a focus on recent developments in Mathematical Finance and related fields.",
+    "Talks at this conference are by invitation only. General participants are welcome to attend as audience members; registration information will be announced in due course."
+  ],
+
+  news: [
+    { date:"TBA",            text:"Registration for general participants opens." },
+    { date:"TBA",            text:"Invited speakers announced." },
+    { date:"September 2026", text:"Conference website launched. Dates and city confirmed: May 31 – June 3, 2027, Haeundae, Busan." }
+  ],
+
+  // ── Organizing committee — 10 members. `lead:true` marks a main organizer.
+  //    Each group is listed alphabetically by surname.
+  organizers: [
+    { lead:true, name:"Jin Hyuk Choi", affil:"UNIST",                        url:"https://sites.google.com/site/gubukhyuk/" },
+    { lead:true, name:"Takwon Kim",    affil:"Sungshin Women's University",  url:"https://sites.google.com/view/takwonkim" },
+    { lead:true, name:"Minsuk Kwak",   affil:"Hankuk University of Foreign Studies", url:"https://sites.google.com/site/minsukkwak/" },
+    { lead:true, name:"Jehan Oh",      affil:"Kyungpook National University",url:"https://sites.google.com/site/jehanohmath/" },
+
+    { name:"Jongbong An",   affil:"Sungshin Women's University", url:"https://sites.google.com/view/jongbongan/" },
+    { name:"Junkee Jeon",   affil:"Kyung Hee University",        url:"https://sites.google.com/site/junkeejeon/home" },
+    { name:"Donghan Kim",   affil:"KAIST",                       url:"https://sites.google.com/view/donghan-kim" },
+    { name:"Hyun-Gyoon Kim",affil:"Ajou University",             url:"https://sites.google.com/view/hyun-gyoon-kim" },
+    { name:"Yeoneung Kim",  affil:"Yonsei University",           url:"https://sites.google.com/view/yeoneung527/home" },
+    { name:"Hyungbin Park", affil:"Seoul National University",   url:"https://sites.google.com/view/hyungbin2024" }
+  ],
+  organizerNote: "",
+
+  // Each institution is named the way it names itself. KAIST and UNIST are the
+  // institutions' own English names, not abbreviations of them, so they stay as
+  // they are — and they are what international colleagues recognise. The Korean
+  // gloss beside each entry removes any ambiguity.
+  sponsors: [
+    { name:"Ajou University",                       ko:"아주대학교" },
+    { name:"Hankuk University of Foreign Studies",  ko:"한국외국어대학교" },
+    { name:"KAIST",                                 ko:"한국과학기술원" },
+    { name:"Kyung Hee University",                  ko:"경희대학교" },
+    { name:"Kyungpook National University",         ko:"경북대학교" },
+    { name:"National Research Foundation of Korea", ko:"한국연구재단" },
+    { name:"Seoul National University",             ko:"서울대학교" },
+    { name:"Sungshin Women's University",           ko:"성신여자대학교" },
+    { name:"UNIST",                                 ko:"울산과학기술원" },
+    { name:"Yonsei University",                     ko:"연세대학교" }
+  ],
+  sponsorNote: "The home institutions of the organizing committee, together with the National Research Foundation of Korea.",
+
+  durations: {
+    plenary : "50 min presentation, 10 min discussion",
+    invited : "30 min presentation, 10 min discussion"
+  },
+
+  past: [
+    { year:"2026", name:"Jeju Conference on Mathematical Finance and Related Topics",
+      dates:"May 30 – June 3, 2026", url:"https://sites.google.com/view/2026-workshop-math-finance/" },
+    { year:"2025", name:"Workshop on Mathematical Finance at Seoul",
+      dates:"May 24 – 28, 2025", url:"https://sites.google.com/view/2025-workshop-mf-seoul/" },
+    { year:"2024", name:"Workshop on Mathematical Finance at Jeju",
+      dates:"May 30 – June 3, 2024", url:"https://sites.google.com/khu.ac.kr/2024-workshop-mf-jeju/" }
+  ]
+};
+
+/* ── SPEAKERS ─────────────────────────────────────────────────────────────
+   Each entry: { id, kind:"plenary"|"invited", name, affil, url, title, abstract, coauthors }
+   • id       — short unique key; referenced by SCHEDULE below and by anchor links
+   • url      — personal homepage (leave "" if none)
+   • title    — talk title ("" until known)
+   • abstract — array of paragraphs ([] until known)
+   ───────────────────────────────────────────────────────────────────────── */
+const SPEAKERS = [
+  // ── EMPTY. Example row:
+  // { id:"p1", kind:"plenary", name:"Jane Doe", affil:"Some University",
+  //   url:"https://example.edu/~jdoe", title:"A Talk Title",
+  //   abstract:["First paragraph.","Second paragraph."], coauthors:"John Roe" },
+];
+
+/* ── SCHEDULE ─────────────────────────────────────────────────────────────
+   kinds: admin · plenary · invited · break · meal · social · excursion · discussion
+   • sp   — a speaker id from SPEAKERS above (renders the name, linked to the abstract)
+   • text — literal label, for non-talk items
+   • span — days this item spans in the grid (colspan), e.g. a shared coffee break
+   • rows — time slots this item spans in the grid (rowspan), e.g. an excursion
+   ───────────────────────────────────────────────────────────────────────── */
+const TIMES = [];   // e.g. ["08:30","09:00","10:00","10:40", …] — one row per time slot
+
+const SCHEDULE = [
+  // ── EMPTY. Example day:
+  // { date:"31 May", dow:"Mon", day:1, items:[
+  //   { t:"08:30", kind:"admin",     text:"Registration" },
+  //   { t:"09:00", kind:"plenary",   sp:"p1" },
+  //   { t:"10:40", kind:"break",     text:"Coffee Break", span:4 },
+  //   { t:"14:00", kind:"excursion", text:"Excursion", rows:6 }
+  // ]},
+];
+
+/* ════════════════════════════════════════════════════════════════════════
+   ██  RENDERING — no editing needed below  ██
+   ════════════════════════════════════════════════════════════════════════ */
+
+const PAGES = [
+  { id:"main",      label:"Main" },
+  { id:"speakers",  label:"Speakers" },
+  { id:"program",   label:"Programme" },
+  { id:"abstracts", label:"Titles and Abstracts" },
+  { id:"stay",      label:"Accommodation" },
+  { id:"travel",    label:"Getting Around" },
+  { id:"poster",    label:"Poster" },
+  { id:"past",      label:"Past Events" }
+];
+
+/* soft = a non-talk item: tinted and italicised rather than colour-coded */
+const KIND = {
+  plenary   : { label:"Plenary",    soft:false },
+  invited   : { label:"Invited",    soft:false },
+  admin     : { label:"Admin",      soft:true  },
+  break     : { label:"Break",      soft:true  },
+  meal      : { label:"Meal",       soft:true  },
+  social    : { label:"Social",     soft:true  },
+  excursion : { label:"Excursion",  soft:true  },
+  discussion: { label:"Discussion", soft:true  }
+};
+
+const $  = s => document.querySelector(s);
+const el = (t, cls, html) => { const n=document.createElement(t); if(cls)n.className=cls; if(html!=null)n.innerHTML=html; return n; };
+const esc = s => String(s??"").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const byId = id => SPEAKERS.find(s => s.id === id);
+const named = s => s && s.name && s.name.trim();
+
+/* ── masthead and footer ───────────────────────────────────────────── */
+const titled = CONF.title && CONF.title.trim();
+$("#mast-title").innerHTML = titled
+  ? esc(CONF.title)
+  : `<span class="untitled">Title for the ${esc(CONF.phrase)}</span>`;
+$("#mast-sub").innerHTML =
+  `<div class="dates">${esc(CONF.dates)}</div>` +
+  `<div class="place">${esc(CONF.venue)}, ${esc(CONF.country)}</div>` +
+  (titled ? "" : `<div class="pending">The conference has not been named yet — the title above is a placeholder.</div>`);
+$("#foot-title").textContent = CONF.shortName;
+$("#foot-updated").textContent = "last updated " + CONF.updated;
+$("#foot-contact").innerHTML = `<a href="mailto:${esc(CONF.email)}">${esc(CONF.email)}</a>`;
+
+/* ── nav ───────────────────────────────────────────────────────────── */
+const nav = $("#nav");
+PAGES.forEach(p => {
+  const a = el("a", null, esc(p.label));
+  a.href = "#" + p.id; a.dataset.page = p.id;
+  nav.appendChild(a);
+});
+
+/* ── main page ─────────────────────────────────────────────────────── */
+$("#about").innerHTML =
+  `<dl class="kv">
+     <dt>Dates</dt><dd>${esc(CONF.dates)}</dd>
+     <dt>Venue</dt><dd>${esc(CONF.venueFull)}</dd>
+   </dl>` +
+  CONF.about.map(p => `<p>${esc(p)}</p>`).join("");
+
+$("#news").innerHTML = CONF.news.map(n =>
+  `<li><span class="dt">${esc(n.date)}</span><span>${esc(n.text)}</span></li>`).join("");
+
+/* one line per person, set like an entry in a printed programme */
+const personLine = (name, affil, url, extra) => `
+  <p class="person"><span class="nm">${
+      url ? `<a href="${esc(url)}" target="_blank" rel="noopener">${esc(name)}</a>` : esc(name)
+    }</span>${affil ? `<span class="sep">, </span><span class="af">${esc(affil)}</span>` : ""}${extra || ""}</p>`;
+
+const leads  = CONF.organizers.filter(o => o.lead);
+const others = CONF.organizers.filter(o => !o.lead);
+$("#organizers-lead").innerHTML = leads.map(o => personLine(o.name, o.affil, o.url)).join("");
+$("#organizers").innerHTML = others.map(o => personLine(o.name, o.affil, o.url)).join("");
+$("#org-count").textContent = CONF.organizers.length + " members in total";
+$("#org-note").textContent = CONF.organizerNote;
+if (!CONF.organizerNote) $("#org-note").remove();
+
+$("#sponsors").innerHTML = CONF.sponsors.map(s =>
+  `<p class="person"><span class="nm">${esc(s.name)}</span>${s.ko ? `<span class="ko">${esc(s.ko)}</span>` : ""}</p>`).join("");
+$("#spo-note").textContent = CONF.sponsorNote;
+
+$("#contact").innerHTML =
+  `<dt>E-mail</dt><dd><a href="mailto:${esc(CONF.email)}">${esc(CONF.email)}</a></dd>
+   <dt>Website</dt><dd>${location.origin && location.origin !== "null" ? esc(location.origin + location.pathname) : "—"}</dd>`;
+
+/* ── empty state ───────────────────────────────────────────────────── */
+function emptyState(what, say, how){
+  return `<div class="empty">
+    <div class="lbl">empty</div>
+    <div class="ttl">${esc(what)} for the ${esc(CONF.phrase)}</div>
+    <p class="say">${esc(say)}</p>
+    ${how ? `<p class="how">${how}</p>` : ""}
+  </div>`;
+}
+
+/* ── speakers ──────────────────────────────────────────────────────── */
+function renderSpeakers(){
+  const box = $("#speakers-body");
+  if (!SPEAKERS.length){
+    box.innerHTML = emptyState("Speakers",
+      "No speakers have been announced yet. This page is intentionally blank.",
+      `Add entries to the <code>SPEAKERS</code> array in the data block; the speaker list, the programme and the abstracts all fill in automatically.`);
+    return;
+  }
+  const mk = kind => SPEAKERS.filter(s => s.kind === kind).map(s =>
+    named(s)
+      ? personLine(s.name, s.affil, s.url,
+          ` &nbsp;<a href="#abstracts/${s.id}" class="tag">abstract</a>`)
+      : `<p class="person"><span class="af">To be announced</span> <span class="tag">(${KIND[kind].label.toLowerCase()})</span></p>`
+  ).join("");
+  const np = SPEAKERS.filter(s => s.kind === "plenary");
+  const ni = SPEAKERS.filter(s => s.kind === "invited");
+  const cnt = a => { const c = a.filter(named).length; return c ? `${c} of ${a.length} confirmed` : `${a.length} slots`; };
+  box.innerHTML =
+    `<p class="lede" style="margin:0 0 32px">A speaker's name links to their homepage; "abstract" jumps to their talk.</p>` +
+    (np.length ? `<section class="blk"><h3>Plenary Speakers <span class="count">${cnt(np)}</span></h3>${mk("plenary")}</section>` : "") +
+    (ni.length ? `<section class="blk"><h3>Invited Speakers <span class="count">${cnt(ni)}</span></h3>${mk("invited")}</section>` : "") +
+    `<p class="foot-note">Plenary talks: ${esc(CONF.durations.plenary)}. Invited talks: ${esc(CONF.durations.invited)}.</p>`;
+}
+
+/* ── programme ─────────────────────────────────────────────────────── */
+function renderProgram(){
+  const box = $("#program-body");
+  if (!SCHEDULE.length || !TIMES.length){
+    box.innerHTML = emptyState("A programme",
+      "The programme has not been drawn up yet. This page is intentionally blank.",
+      `Fill in <code>TIMES</code> and <code>SCHEDULE</code> in the data block. The grid and the day-by-day list are generated from that one source, so they cannot disagree.`);
+    return;
+  }
+  box.innerHTML =
+    `<p class="lede" style="margin:0 0 32px">A grid overview followed by a day-by-day list, both generated from the same source. On a narrow screen the grid scrolls sideways.</p>
+     <section class="blk"><h3>At a Glance</h3>
+       <p class="legend" id="legend"></p>
+       <div class="scroller"><table class="grid" id="grid"></table></div>
+       <div class="note" id="dur-box"></div>
+     </section>
+     <section class="blk"><h3>Day by Day</h3><div id="daily"></div></section>`;
+  renderGrid(); renderDaily();
+}
+
+function renderGrid(){
+  $("#legend").textContent =
+    "Plenary talks are ruled above and below; talks sit on the paper; breaks, meals, excursions and discussion sessions are tinted.";
+
+  let html = "<thead><tr><th></th>" + SCHEDULE.map(d =>
+    `<th>${esc(d.date)}<span class="dow">${esc(d.dow)}</span></th>`).join("") + "</tr></thead><tbody>";
+
+  const taken = {};
+  TIMES.forEach((tm, ri) => {
+    html += `<tr><td class="t">${esc(tm)}</td>`;
+    SCHEDULE.forEach((d, ci) => {
+      if (taken[ri + ":" + ci]) return;
+      const it = d.items.find(x => x.t === tm);
+      if (!it) { html += `<td class="empty"></td>`; return; }
+      const rows = it.rows || 1, span = it.span || 1;
+      for (let r = 0; r < rows; r++) for (let c = 0; c < span; c++)
+        if (r || c) taken[(ri+r) + ":" + (ci+c)] = 1;
+
+      let body;
+      if (it.sp) {
+        const s = byId(it.sp);
+        body = named(s)
+          ? `<a href="#abstracts/${s.id}">${esc(s.name)}</a>`
+          : `<i style="color:var(--faint)">TBA</i>`;
+      } else body = esc(it.text);
+
+      const cls = (KIND[it.kind] && KIND[it.kind].soft) ? "soft" : "k-" + it.kind;
+      html += `<td class="${cls}"${rows>1?` rowspan="${rows}"`:""}${span>1?` colspan="${span}"`:""}>${body}</td>`;
+    });
+    html += "</tr>";
+  });
+  $("#grid").innerHTML = html + "</tbody>";
+
+  $("#dur-box").innerHTML =
+    `<b>Talk duration.</b> Plenary — ${esc(CONF.durations.plenary)}. ` +
+    `Invited — ${esc(CONF.durations.invited)}. ` +
+    `Please arrive a few minutes early so that sessions can keep to time.`;
+}
+
+function renderDaily(){
+  $("#daily").innerHTML = SCHEDULE.map(d => `
+    <div class="day">
+      <div class="day-head">
+        <span class="d">${esc(d.date)}</span>
+        <span class="dw">${esc(d.dow)}</span>
+        <span class="dn">day ${d.day}</span>
+      </div>
+      ${d.items.map(it => {
+        const s = it.sp ? byId(it.sp) : null;
+        const k = KIND[it.kind] || { label:"", soft:false };
+        let title, sub = it.sub || "";
+        if (s) {
+          title = named(s)
+            ? `<a href="#abstracts/${s.id}">${esc(s.name)}</a>`
+            : `<i style="color:var(--faint)">To be announced</i>`;
+          if (named(s)) sub = [s.affil, s.title].filter(Boolean).map(esc).join(" — ");
+        } else title = esc(it.text);
+        return `<div class="slot${k.soft ? " soft" : ""}">
+          <span class="tm">${esc(it.t)}</span>
+          <span class="bd2"><span class="ti">${title}</span>${sub?`<div class="sub">${sub}</div>`:""}</span>
+          <span class="kd tag">${esc(k.label.toLowerCase())}</span>
+        </div>`;
+      }).join("")}
+    </div>`).join("");
+}
+
+/* ── abstracts ─────────────────────────────────────────────────────── */
+function renderAbstracts(){
+  const box = $("#abstracts-body");
+  if (!SPEAKERS.length){
+    box.innerHTML = emptyState("Titles and abstracts",
+      "No titles or abstracts have been collected yet. This page is intentionally blank.",
+      `Each speaker's <code>title</code> and <code>abstract</code> live on their entry in the <code>SPEAKERS</code> array — one record per talk, with no second copy to keep in step.`);
+    return;
+  }
+  box.innerHTML =
+    `<p class="lede" style="margin:0 0 32px">Click a talk to expand its abstract. Links from the programme open the corresponding entry directly.</p>
+     <section class="blk"><h3>Plenary Talks <span class="count" id="abs-pl-count"></span></h3><div id="abs-plenary"></div></section>
+     <section class="blk"><h3>Invited Talks <span class="count" id="abs-in-count"></span></h3><div id="abs-invited"></div></section>`;
+
+  const mk = kind => SPEAKERS.filter(s => s.kind === kind).map(s => {
+    const dur = kind === "plenary" ? "50 + 10 min" : "30 + 10 min";
+    const head = named(s)
+      ? `<div><div class="atitle">${s.title ? esc(s.title) : `<i style="color:var(--faint)">Title to be announced</i>`}</div>
+           <div class="ameta">${esc(s.name)}${s.affil ? ", " + esc(s.affil) : ""}</div></div>`
+      : `<div><div class="atitle"><i style="color:var(--faint)">To be announced</i></div>
+           <div class="ameta">${esc(KIND[kind].label.toLowerCase())} talk</div></div>`;
+    const body = s.abstract && s.abstract.length
+      ? s.abstract.map(p => `<p>${esc(p)}</p>`).join("") +
+        (s.coauthors ? `<p class="co">Joint work with ${esc(s.coauthors)}.</p>` : "")
+      : `<p><i style="color:var(--faint)">Abstract to be announced.</i></p>`;
+    return `<details class="abs" id="a-${s.id}">
+      <summary>${head}
+        <span class="aright tag">${esc(KIND[kind].label.toLowerCase())}<br>${dur}</span>
+      </summary>
+      <div class="abody">${body}</div>
+    </details>`;
+  }).join("");
+
+  $("#abs-plenary").innerHTML = mk("plenary");
+  $("#abs-invited").innerHTML = mk("invited");
+  $("#abs-pl-count").textContent = SPEAKERS.filter(s=>s.kind==="plenary").length + " talks";
+  $("#abs-in-count").textContent = SPEAKERS.filter(s=>s.kind==="invited").length + " talks";
+}
+
+/* ── accommodation and poster ──────────────────────────────────────── */
+$("#stay-body").innerHTML = emptyState("Accommodation",
+  "No hotel has been arranged yet. This page is intentionally blank.",
+  `Once the venue is settled, put the hotel, the room block, rates and the booking deadline here — together with the Korean address, so that participants can show it to a taxi driver.`);
+
+$("#poster-body").innerHTML = emptyState("A poster",
+  "The conference poster has not been made yet. This page is intentionally blank.",
+  `Replace this block with <code>&lt;img src="poster.jpg" …&gt;</code> and a link to the print-resolution PDF. Put the website address and the contact e-mail on the poster itself — the 2024 and 2026 posters omitted both.`);
+
+/* ── past events ───────────────────────────────────────────────────── */
+$("#pe-count").textContent = CONF.past.length + " events";
+$("#past").innerHTML = CONF.past.map(e => `
+  <div class="evt">
+    <span class="yr">${esc(e.year)}</span>
+    <span><span>${esc(e.name)}</span><div class="ed">${esc(e.dates)}</div></span>
+    <a class="go tag" href="${esc(e.url)}" target="_blank" rel="noopener">visit</a>
+  </div>`).join("");
+
+/* ── copy-to-clipboard ─────────────────────────────────────────────── */
+document.querySelectorAll(".copy").forEach(b => b.addEventListener("click", async () => {
+  const ic = b.querySelector(".ic"), orig = ic.textContent;
+  try { await navigator.clipboard.writeText(b.dataset.copy); ic.textContent = "copied"; }
+  catch { ic.textContent = "copy failed"; }
+  setTimeout(() => ic.textContent = orig, 1800);
+}));
+
+/* ── routing ───────────────────────────────────────────────────────── */
+function route(){
+  const raw = (location.hash || "#main").slice(1);
+  const [page, target] = raw.split("/");
+  const id = PAGES.some(p => p.id === page) ? page : "main";
+
+  document.querySelectorAll(".view").forEach(v => v.classList.toggle("on", v.id === "v-" + id));
+  document.querySelectorAll(".nav a").forEach(a => a.classList.toggle("on", a.dataset.page === id));
+  document.title = (id === "main" ? "" : PAGES.find(p=>p.id===id).label + " · ") + CONF.shortName;
+
+  if (id === "abstracts" && target) {
+    const d = document.getElementById("a-" + target);
+    if (d) {
+      d.open = true; d.classList.add("hi");
+      setTimeout(() => {
+        d.scrollIntoView({ behavior:"smooth", block:"center" });
+        setTimeout(() => d.classList.remove("hi"), 2200);
+      }, 60);
+      return;
+    }
+  }
+  window.scrollTo({ top:0, behavior: raw === "main" ? "auto" : "smooth" });
+}
+
+renderSpeakers(); renderProgram(); renderAbstracts();
+window.addEventListener("hashchange", route);
+route();
+</script>
+</body>
+</html>
