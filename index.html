@@ -236,10 +236,22 @@ code{background:var(--tint); padding:1px 5px; border-radius:4px; font-family:ui-
 .empty .say{color:var(--muted); margin:14px auto 0; max-width:54ch; line-height:1.6}
 .empty .how{color:var(--muted); font-size:15.5px; margin:22px auto 0; max-width:60ch; line-height:1.6}
 
-.evt{display:flex; align-items:baseline; gap:18px; margin-bottom:10px; line-height:1.5}
-.evt .yr{color:var(--faint); width:44px; flex-shrink:0}
-.evt .ed{color:var(--muted); font-size:15px}
-.evt .go{margin-left:auto; flex-shrink:0}
+/* ── past events: one photo card per meeting ───────────────────────── */
+.past-grid{display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:22px}
+.pcard{
+  display:block; color:var(--ink); background:var(--card); border:1px solid var(--rule-soft);
+  border-radius:8px; box-shadow:var(--shadow); overflow:hidden;
+  transition:transform .15s ease, box-shadow .15s ease;
+}
+.pcard:hover{text-decoration:none; transform:translateY(-2px); box-shadow:0 2px 4px rgba(20,30,45,.06), 0 10px 24px rgba(20,30,45,.12)}
+.pcard .ph{display:block; width:100%; aspect-ratio:16/10; object-fit:cover; border-bottom:1px solid var(--rule-soft)}
+.pcard .ph-none{background:var(--accent); color:var(--accent-ink); display:flex; align-items:center; justify-content:center}
+.pcard .ph-none span{font-size:54px; font-weight:600; letter-spacing:-.02em; opacity:.35}
+.pcard .pb{padding:16px 20px 18px}
+.pcard .py{color:var(--link); font-weight:600; font-size:14px; letter-spacing:.06em}
+.pcard .pn{font-weight:600; font-size:17px; line-height:1.35; margin-top:4px}
+.pcard .pm{color:var(--muted); font-size:15px; margin-top:6px}
+.pcard .pg{color:var(--link); font-size:15px; font-weight:600; margin-top:12px}
 
 footer{border-top:1px solid var(--rule-soft)}
 footer .wrap{padding-top:22px; padding-bottom:44px; color:var(--muted); font-size:15px}
@@ -247,6 +259,7 @@ footer .sep{margin:0 10px}
 
 @media(max-width:900px){
   .cols{grid-template-columns:1fr}
+  .past-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
 @media(max-width:640px){
   body{font-size:16.5px}
@@ -260,6 +273,7 @@ footer .sep{margin:0 10px}
   main{padding:22px 0 60px}
   section.blk{padding:18px 18px 20px; margin-bottom:16px}
   .empty{padding:36px 14px}
+  .past-grid{grid-template-columns:1fr; gap:16px}
   .news li{flex-direction:column; gap:0}
   .news .dt{width:auto}
   .slot{gap:14px}
@@ -471,11 +485,11 @@ footer .sep{margin:0 10px}
 
   <!-- ═══════════════ PAST EVENTS ═══════════════ -->
   <section class="view" id="v-past">
-    <div class="page-head"><h2>Past Events</h2></div>
-    <section class="blk">
-      <h3>Previous Meetings <span class="count" id="pe-count"></span></h3>
-      <div id="past"></div>
-    </section>
+    <div class="page-head">
+      <h2>Past Events</h2>
+      <p>The series has met every year since 2024. Earlier meetings are listed below with links to their websites.</p>
+    </div>
+    <div class="past-grid" id="past"></div>
   </section>
 
 </div></main>
@@ -568,13 +582,19 @@ const CONF = {
     invited : "30 min presentation, 10 min discussion"
   },
 
+  // ── Past meetings, newest first. `photo` is a file next to index.html
+  //    (e.g. "past-2026.jpg", landscape, about 1200×750); leave "" and a
+  //    plain block with the year is shown instead.
   past: [
     { year:"2026", name:"Jeju Conference on Mathematical Finance and Related Topics",
-      dates:"May 30 – June 3, 2026", url:"https://sites.google.com/view/2026-workshop-math-finance/" },
+      dates:"May 30 – June 3, 2026", venue:"The Suites Hotel, Jeju", photo:"",
+      url:"https://sites.google.com/view/2026-workshop-math-finance/" },
     { year:"2025", name:"Workshop on Mathematical Finance at Seoul",
-      dates:"May 24 – 28, 2025", url:"https://sites.google.com/view/2025-workshop-mf-seoul/" },
+      dates:"May 24 – 28, 2025", venue:"Seoul National University", photo:"",
+      url:"https://sites.google.com/view/2025-workshop-mf-seoul/" },
     { year:"2024", name:"Workshop on Mathematical Finance at Jeju",
-      dates:"May 30 – June 3, 2024", url:"https://sites.google.com/khu.ac.kr/2024-workshop-mf-jeju/" }
+      dates:"May 30 – June 3, 2024", venue:"Suites Hotel Jeju", photo:"",
+      url:"https://sites.google.com/khu.ac.kr/2024-workshop-mf-jeju/" }
   ]
 };
 
@@ -870,13 +890,18 @@ $("#poster-body").innerHTML = emptyState("A poster",
   `Replace this block with <code>&lt;img src="poster.jpg" …&gt;</code> and a link to the print-resolution PDF. Put the website address and the contact e-mail on the poster itself — the 2024 and 2026 posters omitted both.`);
 
 /* ── past events ───────────────────────────────────────────────────── */
-$("#pe-count").textContent = CONF.past.length + " events";
 $("#past").innerHTML = CONF.past.map(e => `
-  <div class="evt">
-    <span class="yr">${esc(e.year)}</span>
-    <span><span>${esc(e.name)}</span><div class="ed">${esc(e.dates)}</div></span>
-    <a class="go tag" href="${esc(e.url)}" target="_blank" rel="noopener">visit</a>
-  </div>`).join("");
+  <a class="pcard" href="${esc(e.url)}" target="_blank" rel="noopener">
+    ${e.photo
+      ? `<img class="ph" src="${esc(e.photo)}" alt="${esc(e.name)}">`
+      : `<div class="ph ph-none"><span>${esc(e.year)}</span></div>`}
+    <div class="pb">
+      <div class="py">${esc(e.year)}</div>
+      <div class="pn">${esc(e.name)}</div>
+      <div class="pm">${esc(e.dates)}${e.venue ? ` · ${esc(e.venue)}` : ""}</div>
+      <div class="pg">Website →</div>
+    </div>
+  </a>`).join("");
 
 /* ── copy-to-clipboard ─────────────────────────────────────────────── */
 document.querySelectorAll(".copy").forEach(b => b.addEventListener("click", async () => {
