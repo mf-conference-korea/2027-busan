@@ -8,7 +8,7 @@
 <meta property="og:title" content="2027 MF at Busan">
 <meta property="og:description" content="May 31 – June 3, 2027 — Haeundae, Busan, Korea.">
 <meta property="og:type" content="website">
-<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='10' fill='%230b4a8b'/><text x='32' y='44' font-family='Helvetica,Arial,sans-serif' font-weight='700' font-size='30' fill='%23ffffff' text-anchor='middle'>MF</text></svg>">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><rect width='64' height='64' rx='10' fill='%2317294d'/><text x='32' y='44' font-family='Helvetica,Arial,sans-serif' font-weight='700' font-size='30' fill='%23ffffff' text-anchor='middle'>MF</text></svg>">
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -30,7 +30,7 @@
 
 <style>
 /* ── tokens ────────────────────────────────────────────────────────────
-   One accent colour (a deep sea blue) on a light grey ground with white
+   One accent colour (a deep navy) on a light grey ground with white
    cards; the dark scheme mirrors the same roles. Every colour on the site
    is one of these tokens — no literal colour values below this block.
    ──────────────────────────────────────────────────────────────────── */
@@ -43,8 +43,8 @@
   --paper:#f3f5f7;                 /* page ground */
   --card:#ffffff;                  /* card surface */
   --tint:#eef1f5;                  /* soft cell tint */
-  --accent:#0b4a8b; --accent-ink:#ffffff;
-  --link:#0b4a8b;
+  --accent:#17294d; --accent-ink:#ffffff;
+  --link:#17294d;
   --bar:#ffffff; --bar-ink:#1a1c1f;
   --shadow:0 1px 2px rgba(20,30,45,.05), 0 3px 12px rgba(20,30,45,.06);
   --sans:"Source Sans 3","Helvetica Neue",Arial,"Apple SD Gothic Neo",
@@ -56,7 +56,7 @@
     --ghost:#6a6f77;
     --rule:#3a3f47; --rule-soft:#2c3037;
     --paper:#131518; --card:#1c1f24; --tint:#252930;
-    --accent:#0f3f73; --accent-ink:#ffffff;
+    --accent:#101c36; --accent-ink:#ffffff;
     --link:#8ab6ec;
     --bar:#1c1f24; --bar-ink:#e8eaed;
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 3px 12px rgba(0,0,0,.35);
@@ -98,7 +98,7 @@ i,em,cite{font-style:italic}
   padding:64px 0 58px; position:relative; overflow:hidden;
   background-size:cover; background-position:center;
 }
-.hero.has-banner::before{content:""; position:absolute; inset:0; background:rgba(8,34,66,.66)}
+.hero.has-banner::before{content:""; position:absolute; inset:0; background:rgba(12,22,44,.66)}
 .hero .wrap{position:relative}
 .hero .series{font-size:14px; letter-spacing:.14em; text-transform:uppercase; opacity:.82; margin-bottom:18px}
 .hero h1{font-size:clamp(30px,4.6vw,46px); font-weight:600; line-height:1.18; max-width:24ch; margin:0 auto; letter-spacing:-.01em}
@@ -556,11 +556,11 @@ const CONF = {
     { name:"KAIST",                                 ko:"한국과학기술원" },
     { name:"Kyung Hee University",                  ko:"경희대학교" },
     { name:"Kyungpook National University",         ko:"경북대학교" },
-    { name:"National Research Foundation of Korea", ko:"한국연구재단" },
     { name:"Seoul National University",             ko:"서울대학교" },
     { name:"Sungshin Women's University",           ko:"성신여자대학교" },
     { name:"UNIST",                                 ko:"울산과학기술원" },
-    { name:"Yonsei University",                     ko:"연세대학교" }
+    { name:"Yonsei University",                     ko:"연세대학교" },
+    { name:"National Research Foundation of Korea", ko:"한국연구재단" }   // funder, listed last
   ],
 
   durations: {
