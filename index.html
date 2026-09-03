@@ -28,6 +28,8 @@
        consistent.
      ═══════════════════════════════════════════════════════════════════════ -->
 
+<script>/* apply a remembered theme choice before first paint */
+(function(){try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
 <style>
 /* ── tokens ────────────────────────────────────────────────────────────
    One accent colour (a deep navy) on a light grey ground with white
@@ -51,7 +53,7 @@
          "Noto Sans KR","Malgun Gothic",sans-serif;
 }
 @media (prefers-color-scheme: dark){
-  :root{
+  :root:not([data-theme="light"]){
     --ink:#e8eaed; --ink-2:#d3d6da; --muted:#a8adb5; --faint:#8b9098;
     --ghost:#6a6f77;
     --rule:#3a3f47; --rule-soft:#2c3037;
@@ -62,6 +64,19 @@
     --shadow:0 1px 2px rgba(0,0,0,.4), 0 3px 12px rgba(0,0,0,.35);
   }
 }
+/* the toggle in the top bar stamps data-theme on <html>; it beats the system setting */
+:root[data-theme="dark"]{
+    --ink:#e8eaed; --ink-2:#d3d6da; --muted:#a8adb5; --faint:#8b9098;
+    --ghost:#6a6f77;
+    --rule:#3a3f47; --rule-soft:#2c3037;
+    --paper:#131518; --card:#1c1f24; --tint:#252930;
+    --accent:#101c36; --accent-ink:#ffffff;
+    --link:#8ab6ec;
+    --bar:#1c1f24; --bar-ink:#e8eaed;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 3px 12px rgba(0,0,0,.35);
+}
+:root[data-theme="light"]{color-scheme:light}
+:root[data-theme="dark"]{color-scheme:dark}
 *,*::before,*::after{box-sizing:border-box}
 html{scroll-behavior:smooth}
 body{
@@ -91,6 +106,10 @@ i,em,cite{font-style:italic}
 .nav a{padding:7px 11px; font-size:16px; color:var(--muted); border-radius:6px; white-space:nowrap}
 .nav a:hover{color:var(--ink); background:var(--tint); text-decoration:none}
 .nav a.on{color:var(--bar-ink); font-weight:600}   /* --accent is invisible on the dark bar */
+.theme{margin-left:6px; padding:5px 10px; font:inherit; font-size:14px; color:var(--muted); background:transparent;
+  border:1px solid var(--rule); border-radius:6px; cursor:pointer; white-space:nowrap}
+.theme:hover{color:var(--ink); border-color:var(--ink)}
+.theme:focus-visible{outline:2px solid var(--link); outline-offset:2px}
 
 /* ── hero: the one coloured block on the site ──────────────────────────
    Set CONF.banner to an image path and it becomes the backdrop, dimmed so
@@ -287,6 +306,7 @@ footer .sep{margin:0 10px}
   .brand{width:100%}
   .nav{margin-left:-8px}
   .nav a{padding:5px 8px; font-size:15px}
+  .theme{margin-left:auto; font-size:13px; padding:4px 8px}
   .hero{padding:44px 0 40px}
   main{padding:22px 0 60px}
   section.blk{padding:18px 18px 20px; margin-bottom:16px}
@@ -305,6 +325,7 @@ footer .sep{margin:0 10px}
 <header class="top"><div class="wrap">
   <a class="brand" href="#main" id="brand"></a>
   <nav class="nav" id="nav"></nav>
+  <button class="theme" id="theme" type="button" aria-label="Switch colour theme"></button>
 </div></header>
 
 <section class="hero" id="hero">
@@ -1027,6 +1048,22 @@ $("#past").innerHTML = CONF.past.map(e => `
       </div>
     </div>
   </div>`).join("");
+
+/* ── theme toggle ──────────────────────────────────────────────────── */
+(function(){
+  const btn = $("#theme"), root = document.documentElement,
+        mq = window.matchMedia ? matchMedia("(prefers-color-scheme: dark)") : { matches:false, addEventListener(){} };
+  const isDark = () => root.dataset.theme ? root.dataset.theme === "dark" : mq.matches;
+  const label = () => { btn.textContent = isDark() ? "Light mode" : "Dark mode"; };
+  btn.addEventListener("click", () => {
+    const next = isDark() ? "light" : "dark";
+    root.dataset.theme = next;
+    try { localStorage.setItem("theme", next); } catch (e) {}
+    label();
+  });
+  mq.addEventListener("change", label);
+  label();
+})();
 
 /* ── copy-to-clipboard ─────────────────────────────────────────────── */
 document.querySelectorAll(".copy").forEach(b => b.addEventListener("click", async () => {
