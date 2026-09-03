@@ -44,7 +44,7 @@
   --card:#ffffff;                  /* card surface */
   --tint:#eef1f5;                  /* soft cell tint */
   --accent:#17294d; --accent-ink:#ffffff;
-  --link:#17294d;
+  --link:#0b5cad;                  /* links: a clearly-blue blue, distinct from the accent */
   --bar:#ffffff; --bar-ink:#1a1c1f;
   --shadow:0 1px 2px rgba(20,30,45,.05), 0 3px 12px rgba(20,30,45,.06);
   --sans:"Source Sans 3","Helvetica Neue",Arial,"Apple SD Gothic Neo",
@@ -71,6 +71,9 @@ body{
 }
 a{color:var(--link); text-decoration:none}
 a:hover{text-decoration:underline; text-underline-offset:2px}
+/* links inside running text are underlined so they read as links */
+p a, li a, dd a, td a, .foot-note a, .note a{text-decoration:underline; text-underline-offset:2px; text-decoration-color:color-mix(in srgb, var(--link) 45%, transparent)}
+p a:hover, li a:hover, dd a:hover, td a:hover{text-decoration-color:var(--link)}
 h1,h2,h3,h4{margin:0; font-weight:600; line-height:1.24}
 i,em,cite{font-style:italic}
 
@@ -87,7 +90,7 @@ i,em,cite{font-style:italic}
 .nav{display:flex; flex-wrap:wrap; gap:2px 2px}
 .nav a{padding:7px 11px; font-size:16px; color:var(--muted); border-radius:6px; white-space:nowrap}
 .nav a:hover{color:var(--ink); background:var(--tint); text-decoration:none}
-.nav a.on{color:var(--link); font-weight:600}
+.nav a.on{color:var(--accent); font-weight:600}
 
 /* ── hero: the one coloured block on the site ──────────────────────────
    Set CONF.banner to an image path and it becomes the backdrop, dimmed so
