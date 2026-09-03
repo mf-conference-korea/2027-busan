@@ -159,6 +159,7 @@ a.tag:hover{color:var(--link)}
 .spk .nm{font-weight:600; font-size:17px}
 .spk .af{color:var(--muted); font-size:15px; margin-top:2px}
 .spk .af .tag{margin-left:6px}
+.spk .nm .tbc{font-weight:400; font-size:13px; color:var(--faint); margin-left:6px}
 @media(max-width:700px){ .spk-grid{grid-template-columns:1fr; grid-template-rows:none !important; grid-auto-flow:row; gap:0} }
 
 /* ── programme grid ────────────────────────────────────────────────── */
@@ -651,10 +652,14 @@ const SPEAKERS = [
   // ── 24 speakers, alphabetical by surname (2026-09-03). All marked "invited"
   //    until the plenary speakers are decided; change kind:"plenary" for those.
   //    url / title / abstract are filled in as they come.
+  //    tbc:true = invited, not yet confirmed — shown with a "to be confirmed" tag,
+  //    counted separately, and left out of the abstracts list until confirmed.
   { id:"an",             kind:"invited", name:"Jongbong An",      affil:"Sungshin Women's University",
     url:"https://sites.google.com/view/jongbongan/", title:"", abstract:[], coauthors:"" },
   { id:"chen",           kind:"invited", name:"Kexin Chen",       affil:"The Hong Kong Polytechnic University",
     url:"https://sites.google.com/site/nemechenkexin/", title:"", abstract:[], coauthors:"" },
+  { id:"criens",         kind:"invited", name:"David Criens",       affil:"University of Freiburg", tbc:true,
+    url:"https://sites.google.com/view/david-criens", title:"", abstract:[], coauthors:"" },
   { id:"fukasawa",       kind:"invited", name:"Masaaki Fukasawa", affil:"The University of Osaka",
     url:"https://www.sigmath.es.osaka-u.ac.jp/~fukasawa/", title:"", abstract:[], coauthors:"" },
   { id:"hamaguchi",      kind:"invited", name:"Yushi Hamaguchi",  affil:"Kyoto University",
@@ -689,6 +694,10 @@ const SPEAKERS = [
     url:"https://sites.google.com/site/phamxuanhuyen/", title:"", abstract:[], coauthors:"" },
   { id:"reppen",         kind:"invited", name:"A. Max Reppen",    affil:"Boston University",
     url:"https://max.reppen.ch/", title:"", abstract:[], coauthors:"" },
+  { id:"schied",         kind:"invited", name:"Alexander Schied",   affil:"University of Waterloo", tbc:true,
+    url:"https://uwaterloo.ca/statistics-and-actuarial-science/profile/aschied", title:"", abstract:[], coauthors:"" },
+  { id:"shi",            kind:"invited", name:"Xiaofei Shi",        affil:"University of Toronto", tbc:true,
+    url:"https://xf-shi.github.io/index.html", title:"", abstract:[], coauthors:"" },
   { id:"tran",           kind:"invited", name:"Hung V. Tran",     affil:"University of Wisconsin–Madison",
     url:"https://people.math.wisc.edu/~htran24/", title:"", abstract:[], coauthors:"" },
   { id:"tse",            kind:"invited", name:"Alex S. L. Tse",   affil:"University College London",
@@ -842,14 +851,15 @@ function renderSpeakers(){
     return `<div class="spk-grid" style="grid-template-rows:repeat(${Math.ceil(list.length/2)},auto)">` + list.map(s =>
     named(s)
       ? `<div class="spk">
-           <div class="nm">${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)}</a>` : esc(s.name)}</div>
+           <div class="nm">${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)}</a>` : esc(s.name)}${s.tbc ? ` <span class="tag tbc">to be confirmed</span>` : ""}</div>
            <div class="af">${esc(s.affil)}${hasTalk(s) ? ` <a href="#abstracts/${s.id}" class="tag">abstract</a>` : ""}</div>
          </div>`
       : `<div class="spk"><div class="nm af">To be announced</div><div class="af">${KIND[kind].label}</div></div>`
   ).join("") + `</div>`; };
   const np = SPEAKERS.filter(s => s.kind === "plenary");
   const ni = SPEAKERS.filter(s => s.kind === "invited");
-  const cnt = a => `${a.length} speaker${a.length === 1 ? "" : "s"}`;
+  const cnt = a => { const n = a.filter(x => !x.tbc).length, t = a.length - n;
+    return `${n} speaker${n === 1 ? "" : "s"}${t ? ` · ${t} to be confirmed` : ""}`; };
   box.innerHTML =
     (np.length ? `<section class="blk"><h3>Plenary Speakers <span class="count">${cnt(np)}</span></h3>${mk("plenary")}</section>` : "") +
     (ni.length ? `<section class="blk"><h3>Invited Speakers <span class="count">${cnt(ni)}</span></h3>${mk("invited")}</section>` : "");
@@ -957,7 +967,7 @@ function renderAbstracts(){
      <section class="blk" id="abs-plenary-blk"><h3>Plenary Talks <span class="count" id="abs-pl-count"></span></h3><div id="abs-plenary"></div></section>
      <section class="blk" id="abs-invited-blk"><h3>Invited Talks <span class="count" id="abs-in-count"></span></h3><div id="abs-invited"></div></section>`;
 
-  const mk = kind => SPEAKERS.filter(s => s.kind === kind).map(s => {
+  const mk = kind => SPEAKERS.filter(s => s.kind === kind && !s.tbc).map(s => {
     const dur = CONF.durations[kind] || "";
     const head = named(s)
       ? `<div><div class="atitle">${s.title ? esc(s.title) : `<i style="color:var(--faint)">Title to be announced</i>`}</div>
@@ -978,7 +988,7 @@ function renderAbstracts(){
 
   /* a kind with no speakers gets no section at all */
   [["plenary","#abs-plenary","#abs-pl-count","#abs-plenary-blk"],["invited","#abs-invited","#abs-in-count","#abs-invited-blk"]].forEach(([k,list,count,blk]) => {
-    const n = SPEAKERS.filter(s => s.kind === k).length;
+    const n = SPEAKERS.filter(s => s.kind === k && !s.tbc).length;
     if (!n) { $(blk).remove(); return; }
     $(list).innerHTML = mk(k);
     $(count).textContent = n + " talk" + (n === 1 ? "" : "s");
