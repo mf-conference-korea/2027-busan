@@ -150,6 +150,14 @@ a.tag{color:var(--muted)}
 a.tag:hover{color:var(--link)}
 .sep{color:var(--faint)}
 
+/* ── speakers: two columns, name over affiliation ──────────────────── */
+.spk-grid{display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); grid-auto-flow:column; gap:14px 40px}
+.spk{padding:10px 0; border-bottom:1px solid var(--rule-soft); line-height:1.4}
+.spk .nm{font-weight:600; font-size:17px}
+.spk .af{color:var(--muted); font-size:15px; margin-top:2px}
+.spk .af .tag{margin-left:6px}
+@media(max-width:700px){ .spk-grid{grid-template-columns:1fr; grid-template-rows:none !important; grid-auto-flow:row; gap:0} }
+
 /* ── programme grid ────────────────────────────────────────────────── */
 .legend{color:var(--muted); font-size:15.5px; margin-bottom:14px; line-height:1.6; max-width:70ch}
 .scroller{overflow-x:auto}
@@ -812,20 +820,24 @@ function renderSpeakers(){
       `Add entries to the <code>SPEAKERS</code> array in the data block; the speaker list, the programme and the abstracts all fill in automatically.`);
     return;
   }
-  const mk = kind => SPEAKERS.filter(s => s.kind === kind).map(s =>
+  /* the "abstract" link appears only once a title or abstract has been entered */
+  const hasTalk = s => (s.title && s.title.trim()) || (s.abstract && s.abstract.length);
+  /* alphabetical order runs down the left column, then the right */
+  const mk = kind => { const list = SPEAKERS.filter(s => s.kind === kind);
+    return `<div class="spk-grid" style="grid-template-rows:repeat(${Math.ceil(list.length/2)},auto)">` + list.map(s =>
     named(s)
-      ? personLine(s.name, s.affil, s.url,
-          ` &nbsp;<a href="#abstracts/${s.id}" class="tag">abstract</a>`)
-      : `<p class="person"><span class="af">To be announced</span> <span class="tag">(${KIND[kind].label.toLowerCase()})</span></p>`
-  ).join("");
+      ? `<div class="spk">
+           <div class="nm">${s.url ? `<a href="${esc(s.url)}" target="_blank" rel="noopener">${esc(s.name)}</a>` : esc(s.name)}</div>
+           <div class="af">${esc(s.affil)}${hasTalk(s) ? ` <a href="#abstracts/${s.id}" class="tag">abstract</a>` : ""}</div>
+         </div>`
+      : `<div class="spk"><div class="nm af">To be announced</div><div class="af">${KIND[kind].label}</div></div>`
+  ).join("") + `</div>`; };
   const np = SPEAKERS.filter(s => s.kind === "plenary");
   const ni = SPEAKERS.filter(s => s.kind === "invited");
-  const cnt = a => { const c = a.filter(named).length; return c ? `${c} of ${a.length} confirmed` : `${a.length} slots`; };
+  const cnt = a => `${a.length} speaker${a.length === 1 ? "" : "s"}`;
   box.innerHTML =
-    `<p class="lede" style="margin:0 0 32px">A speaker's name links to their homepage; "abstract" jumps to their talk.</p>` +
     (np.length ? `<section class="blk"><h3>Plenary Speakers <span class="count">${cnt(np)}</span></h3>${mk("plenary")}</section>` : "") +
-    (ni.length ? `<section class="blk"><h3>Invited Speakers <span class="count">${cnt(ni)}</span></h3>${mk("invited")}</section>` : "") +
-    `<p class="foot-note">Plenary talks: ${esc(CONF.durations.plenary)}. Invited talks: ${esc(CONF.durations.invited)}.</p>`;
+    (ni.length ? `<section class="blk"><h3>Invited Speakers <span class="count">${cnt(ni)}</span></h3>${mk("invited")}</section>` : "");
 }
 
 /* ── programme ─────────────────────────────────────────────────────── */
