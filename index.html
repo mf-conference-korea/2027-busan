@@ -228,6 +228,12 @@ table.info tr:last-child td{border-bottom:0}
 .copy .ic{color:var(--faint); font-size:14px; margin-left:8px}
 code{background:var(--tint); padding:1px 5px; border-radius:4px; font-family:ui-monospace,SFMono-Regular,Menlo,monospace; font-size:14px}
 
+/* ── map (Venue page): Google embed, no API key needed ─────────────── */
+.map{border:1px solid var(--rule-soft); border-radius:6px; overflow:hidden; aspect-ratio:21/9; background:var(--tint)}
+.map iframe{display:block; width:100%; height:100%; border:0}
+.map-links{color:var(--faint); font-size:15.5px; margin:12px 0 0}
+.map-links a{font-weight:600}
+
 /* ── empty state ───────────────────────────────────────────────────── */
 .empty{border:1px dashed var(--rule); border-radius:6px; padding:48px 24px; text-align:center}
 .empty .lbl{color:var(--faint); font-size:13px; letter-spacing:.12em; text-transform:uppercase; margin-bottom:14px}
@@ -273,6 +279,7 @@ footer .sep{margin:0 10px}
   main{padding:22px 0 60px}
   section.blk{padding:18px 18px 20px; margin-bottom:16px}
   .empty{padding:36px 14px}
+  .map{aspect-ratio:4/3}
   .past-grid{grid-template-columns:1fr; gap:16px}
   .news li{flex-direction:column; gap:0}
   .news .dt{width:auto}
@@ -348,6 +355,20 @@ footer .sep{margin:0 10px}
     <section class="blk">
       <h3>Accommodation</h3>
       <div id="stay-body"></div>
+    </section>
+
+    <section class="blk">
+      <h3>Map</h3>
+      <div class="map">
+        <iframe src="https://www.google.com/maps?q=Grand+Josun+Busan&output=embed&hl=en&z=16"
+                title="Map showing Grand Josun Busan" loading="lazy"
+                referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+      </div>
+      <p class="map-links">Open in
+        <a href="https://www.google.com/maps/search/?api=1&query=Grand+Josun+Busan" target="_blank" rel="noopener">Google Maps</a> ·
+        <a href="https://map.naver.com/p/search/%EA%B7%B8%EB%9E%9C%EB%93%9C%EC%A1%B0%EC%84%A0%EB%B6%80%EC%82%B0" target="_blank" rel="noopener">Naver Map</a> ·
+        <a href="https://map.kakao.com/?q=%EA%B7%B8%EB%9E%9C%EB%93%9C%EC%A1%B0%EC%84%A0%EB%B6%80%EC%82%B0" target="_blank" rel="noopener">KakaoMap</a>
+      </p>
     </section>
 
     <section class="blk">
