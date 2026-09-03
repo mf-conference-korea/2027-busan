@@ -112,8 +112,8 @@ main{padding:34px 0 80px}
 .view.on{display:block}
 .page-head{margin:4px 0 22px}
 .page-head h2{font-size:30px; letter-spacing:-.01em}
-.page-head p{color:var(--muted); margin:10px 0 0; max-width:70ch}
-.lede{color:var(--muted); margin:0 0 22px; max-width:70ch}
+.page-head p{color:var(--muted); margin:10px 0 0}
+.lede{color:var(--muted); margin:0 0 22px}
 .cols{display:grid; grid-template-columns:minmax(0,1fr) 360px; gap:0 22px; align-items:start}
 
 /* every section is a white card */
@@ -159,7 +159,7 @@ a.tag:hover{color:var(--link)}
 @media(max-width:700px){ .spk-grid{grid-template-columns:1fr; grid-template-rows:none !important; grid-auto-flow:row; gap:0} }
 
 /* ── programme grid ────────────────────────────────────────────────── */
-.legend{color:var(--muted); font-size:15.5px; margin-bottom:14px; line-height:1.6; max-width:70ch}
+.legend{color:var(--muted); font-size:15.5px; margin-bottom:14px; line-height:1.6}
 .scroller{overflow-x:auto}
 table.grid{border-collapse:collapse; width:100%; min-width:640px; font-size:14.5px}
 table.grid th, table.grid td{border:1px solid var(--rule-soft); padding:9px 10px; text-align:center}
@@ -227,7 +227,7 @@ table.info td{padding:10px 18px 10px 0; border-bottom:1px solid var(--rule-soft)
 table.info tr:last-child td{border-bottom:0}
 .note{border-left:3px solid var(--accent); padding:0 0 0 16px; color:var(--muted); font-size:16px; margin:20px 0 0; line-height:1.6}
 .note b{color:var(--ink); font-weight:600}
-.foot-note{color:var(--muted); font-size:15.5px; margin-top:14px; line-height:1.6; max-width:70ch}
+.foot-note{color:var(--muted); font-size:15.5px; margin-top:14px; line-height:1.6}
 .copy{
   display:inline-block; background:var(--card); border:1px solid var(--rule); border-radius:6px;
   padding:7px 14px; font:inherit; font-size:15.5px; cursor:pointer; color:var(--ink); margin-top:10px;
@@ -573,7 +573,7 @@ const CONF = {
     // ── When the speaker list is complete (26), add here, dated:
     //    { date:"… 2026", text:"Invited speakers announced." }
     { date:"September 2026", text:"Venue confirmed: Grand Josun Busan, on Haeundae Beach." },
-    { date:"September 2026", text:"Conference website launched. Dates and city confirmed: May 31 – June 3, 2027, Haeundae, Busan." }
+    { date:"September 2026", text:"Conference website launched." }
   ],
 
   // ── Organizing committee — 10 members. `lead:true` marks a main organizer.
@@ -989,9 +989,6 @@ $("#stay-body").innerHTML = `
     <dt>Address</dt><dd>292 Haeundaehaebyeon-ro, Haeundae-gu, Busan 48099, Republic of Korea<br><span class="tag">${esc(CONF.venueKo)}</span></dd>
     <dt>Telephone</dt><dd>+82 51 922 5000</dd>
   </dl>
-  <p>All talks and meals are held in the hotel, and participants stay on site. A block of rooms is
-     being reserved for the conference; booking instructions, rates and the reservation deadline will
-     be posted here once they are settled.</p>
   <p style="margin-top:14px; color:var(--muted)">Show a taxi driver the Korean address:</p>
   <button class="copy" data-copy="${esc(CONF.venueKo)}">
     부산광역시 해운대구 해운대해변로 292 그랜드 조선 부산<span class="ic">click to copy</span>
