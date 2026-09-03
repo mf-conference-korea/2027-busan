@@ -765,9 +765,17 @@ $("#foot-title").textContent = CONF.shortName;
 $("#foot-updated").textContent = "last updated " + CONF.updated;
 $("#foot-contact").innerHTML = `<a href="mailto:${esc(CONF.email)}">${esc(CONF.email)}</a>`;
 
-/* ── nav ───────────────────────────────────────────────────────────── */
+/* a talk "exists" once its title or abstract has been entered */
+const hasTalk = s => (s.title && s.title.trim()) || (s.abstract && s.abstract.length);
+const anyTalk = SPEAKERS.some(hasTalk);
+
+/* ── nav ───────────────────────────────────────────────────────────────
+   The Abstracts item is hidden until at least one title or abstract has
+   been entered: listing 24 names with "to be announced" would look as if
+   the speakers were late, when they have not even been asked yet.
+   ──────────────────────────────────────────────────────────────────── */
 const nav = $("#nav");
-PAGES.filter(p => p.nav !== false).forEach(p => {
+PAGES.filter(p => p.nav !== false && !(p.id === "abstracts" && !anyTalk)).forEach(p => {
   const a = el("a", null, esc(p.label));
   a.href = "#" + p.id; a.dataset.page = p.id;
   nav.appendChild(a);
@@ -823,9 +831,8 @@ function renderSpeakers(){
       `Add entries to the <code>SPEAKERS</code> array in the data block; the speaker list, the programme and the abstracts all fill in automatically.`);
     return;
   }
-  /* the "abstract" link appears only once a title or abstract has been entered */
-  const hasTalk = s => (s.title && s.title.trim()) || (s.abstract && s.abstract.length);
-  /* alphabetical order runs down the left column, then the right */
+  /* the "abstract" link appears only once a title or abstract has been entered.
+     alphabetical order runs down the left column, then the right */
   const mk = kind => { const list = SPEAKERS.filter(s => s.kind === kind);
     return `<div class="spk-grid" style="grid-template-rows:repeat(${Math.ceil(list.length/2)},auto)">` + list.map(s =>
     named(s)
@@ -935,10 +942,9 @@ function renderDaily(){
 /* ── abstracts ─────────────────────────────────────────────────────── */
 function renderAbstracts(){
   const box = $("#abstracts-body");
-  if (!SPEAKERS.length){
-    box.innerHTML = emptyState("Titles and abstracts",
-      "No titles or abstracts have been collected yet. This page is intentionally blank.",
-      `Each speaker's <code>title</code> and <code>abstract</code> live on their entry in the <code>SPEAKERS</code> array — one record per talk, with no second copy to keep in step.`);
+  if (!anyTalk){
+    /* no names here on purpose — see the note above the nav */
+    box.innerHTML = `<section class="blk"><p>Talk titles and abstracts will be posted here in due course.</p></section>`;
     return;
   }
   box.innerHTML =
