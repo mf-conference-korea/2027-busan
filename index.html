@@ -608,9 +608,12 @@ const CONF = {
     { name:"National Research Foundation of Korea", ko:"한국연구재단" }   // funder, listed last
   ],
 
+  // ── Talk lengths are NOT decided yet (2026-09-03). Leave "" and no duration
+  //    is shown anywhere; fill in e.g. "30 min presentation, 10 min discussion".
+  //    There are no plenary talks at this meeting; all speakers are "invited".
   durations: {
-    plenary : "50 min presentation, 10 min discussion",
-    invited : "30 min presentation, 10 min discussion"
+    plenary : "",
+    invited : ""
   },
 
   // ── Past meetings, newest first. `photo` is the group photo (landscape,
@@ -894,8 +897,11 @@ function renderGrid(){
   $("#grid").innerHTML = html + "</tbody>";
 
   $("#dur-box").innerHTML =
-    `<b>Talk duration.</b> Plenary — ${esc(CONF.durations.plenary)}. ` +
-    `Invited — ${esc(CONF.durations.invited)}. ` +
+    (CONF.durations.plenary || CONF.durations.invited
+      ? `<b>Talk duration.</b> ` +
+        (CONF.durations.plenary ? `Plenary — ${esc(CONF.durations.plenary)}. ` : "") +
+        (CONF.durations.invited ? `Invited — ${esc(CONF.durations.invited)}. ` : "")
+      : "") +
     `Please arrive a few minutes early so that sessions can keep to time.`;
 }
 
@@ -937,11 +943,11 @@ function renderAbstracts(){
   }
   box.innerHTML =
     `<p class="lede" style="margin:0 0 32px">Click a talk to expand its abstract. Links from the programme open the corresponding entry directly.</p>
-     <section class="blk"><h3>Plenary Talks <span class="count" id="abs-pl-count"></span></h3><div id="abs-plenary"></div></section>
-     <section class="blk"><h3>Invited Talks <span class="count" id="abs-in-count"></span></h3><div id="abs-invited"></div></section>`;
+     <section class="blk" id="abs-plenary-blk"><h3>Plenary Talks <span class="count" id="abs-pl-count"></span></h3><div id="abs-plenary"></div></section>
+     <section class="blk" id="abs-invited-blk"><h3>Invited Talks <span class="count" id="abs-in-count"></span></h3><div id="abs-invited"></div></section>`;
 
   const mk = kind => SPEAKERS.filter(s => s.kind === kind).map(s => {
-    const dur = kind === "plenary" ? "50 + 10 min" : "30 + 10 min";
+    const dur = CONF.durations[kind] || "";
     const head = named(s)
       ? `<div><div class="atitle">${s.title ? esc(s.title) : `<i style="color:var(--faint)">Title to be announced</i>`}</div>
            <div class="ameta">${esc(s.name)}${s.affil ? ", " + esc(s.affil) : ""}</div></div>`
@@ -953,16 +959,19 @@ function renderAbstracts(){
       : `<p><i style="color:var(--faint)">Abstract to be announced.</i></p>`;
     return `<details class="abs" id="a-${s.id}">
       <summary>${head}
-        <span class="aright tag">${esc(KIND[kind].label.toLowerCase())}<br>${dur}</span>
+        <span class="aright tag">${esc(KIND[kind].label.toLowerCase())}${dur ? `<br>${esc(dur)}` : ""}</span>
       </summary>
       <div class="abody">${body}</div>
     </details>`;
   }).join("");
 
-  $("#abs-plenary").innerHTML = mk("plenary");
-  $("#abs-invited").innerHTML = mk("invited");
-  $("#abs-pl-count").textContent = SPEAKERS.filter(s=>s.kind==="plenary").length + " talks";
-  $("#abs-in-count").textContent = SPEAKERS.filter(s=>s.kind==="invited").length + " talks";
+  /* a kind with no speakers gets no section at all */
+  [["plenary","#abs-plenary","#abs-pl-count","#abs-plenary-blk"],["invited","#abs-invited","#abs-in-count","#abs-invited-blk"]].forEach(([k,list,count,blk]) => {
+    const n = SPEAKERS.filter(s => s.kind === k).length;
+    if (!n) { $(blk).remove(); return; }
+    $(list).innerHTML = mk(k);
+    $(count).textContent = n + " talk" + (n === 1 ? "" : "s");
+  });
 }
 
 /* ── accommodation and poster ──────────────────────────────────────── */
