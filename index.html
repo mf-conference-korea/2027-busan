@@ -595,8 +595,7 @@ const CONF = {
   ],
 
   news: [
-    // ── When the speaker list is complete (26), add here, dated:
-    //    { date:"… 2026", text:"Invited speakers announced." }
+    { date:"September 12, 2026", text:"Invited speakers announced." },
     { date:"September 2026", text:"Venue confirmed: Grand Josun Busan, on Haeundae Beach." },
     { date:"September 2026", text:"Conference website launched." }
   ],
@@ -670,11 +669,8 @@ const CONF = {
    • abstract — array of paragraphs ([] until known)
    ───────────────────────────────────────────────────────────────────────── */
 const SPEAKERS = [
-  // ── 24 speakers, alphabetical by surname (2026-09-03). All marked "invited"
-  //    until the plenary speakers are decided; change kind:"plenary" for those.
+  // ── 25 invited speakers, alphabetical by surname (finalized 2026-09-12).
   //    url / title / abstract are filled in as they come.
-  //    tbc:true = invited, not yet confirmed — shown with a "to be confirmed" tag,
-  //    counted separately, and left out of the abstracts list until confirmed.
   { id:"an",             kind:"invited", name:"Jongbong An",      affil:"Sungshin Women's University",
     url:"https://sites.google.com/view/jongbongan/", title:"", abstract:[], coauthors:"" },
   { id:"chen",           kind:"invited", name:"Kexin Chen",       affil:"The Hong Kong Polytechnic University",
@@ -715,8 +711,6 @@ const SPEAKERS = [
     url:"https://sites.google.com/site/phamxuanhuyen/", title:"", abstract:[], coauthors:"" },
   { id:"reppen",         kind:"invited", name:"A. Max Reppen",    affil:"Boston University",
     url:"https://max.reppen.ch/", title:"", abstract:[], coauthors:"" },
-  { id:"shi",            kind:"invited", name:"Xiaofei Shi",        affil:"University of Toronto", tbc:true,
-    url:"https://xf-shi.github.io/index.html", title:"", abstract:[], coauthors:"" },
   { id:"tran",           kind:"invited", name:"Hung V. Tran",     affil:"University of Wisconsin–Madison",
     url:"https://people.math.wisc.edu/~htran24/", title:"", abstract:[], coauthors:"" },
   { id:"tse",            kind:"invited", name:"Alex S. L. Tse",   affil:"University College London",
