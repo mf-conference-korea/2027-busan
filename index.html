@@ -162,12 +162,11 @@ p:last-child{margin-bottom:0}
 .person .ko{color:var(--muted); font-size:15px; margin-left:8px; white-space:nowrap}
 .person .rl{color:var(--muted)}
 .tag{color:var(--muted); font-size:15px}
-/* sponsors: English name, Korean name beneath, one block per institution */
+/* sponsors: one block per institution */
 .sponsors{list-style:none; margin:0; padding:0}
 .sponsors li{padding:9px 0; border-bottom:1px solid var(--rule-soft); line-height:1.35}
 .sponsors li:last-child{border-bottom:0; padding-bottom:0}
 .sponsors .nm{display:block; font-weight:600}
-.sponsors .ko{display:block; color:var(--muted); font-size:14.5px; margin-top:1px}
 a.tag{color:var(--muted)}
 a.tag:hover{color:var(--link)}
 .sep{color:var(--faint)}
@@ -619,19 +618,18 @@ const CONF = {
 
   // Each institution is named the way it names itself. KAIST and UNIST are the
   // institutions' own English names, not abbreviations of them, so they stay as
-  // they are — and they are what international colleagues recognise. The Korean
-  // gloss beside each entry removes any ambiguity.
+  // they are — and they are what international colleagues recognise.
   sponsors: [
-    { name:"Ajou University",                       ko:"아주대학교" },
-    { name:"Hankuk University of Foreign Studies",  ko:"한국외국어대학교" },
-    { name:"KAIST",                                 ko:"한국과학기술원" },
-    { name:"Kyung Hee University",                  ko:"경희대학교" },
-    { name:"Kyungpook National University",         ko:"경북대학교" },
-    { name:"Seoul National University",             ko:"서울대학교" },
-    { name:"Sungshin Women's University",           ko:"성신여자대학교" },
-    { name:"UNIST",                                 ko:"울산과학기술원" },
-    { name:"Yonsei University",                     ko:"연세대학교" },
-    { name:"National Research Foundation of Korea", ko:"한국연구재단" }   // funder, listed last
+    { name:"Ajou University" },
+    { name:"Hankuk University of Foreign Studies" },
+    { name:"KAIST" },
+    { name:"Kyung Hee University" },
+    { name:"Kyungpook National University" },
+    { name:"Seoul National University" },
+    { name:"Sungshin Women's University" },
+    { name:"UNIST" },
+    { name:"Yonsei University" },
+    { name:"National Research Foundation of Korea" }   // funder, listed last
   ],
 
   // ── Talk lengths are NOT decided yet (2026-09-03). Leave "" and no duration
@@ -833,7 +831,7 @@ $("#org-note").textContent = CONF.organizerNote;
 if (!CONF.organizerNote) $("#org-note").remove();
 
 $("#sponsors").innerHTML = CONF.sponsors.map(s =>
-  `<li><span class="nm">${esc(s.name)}</span>${s.ko ? `<span class="ko">${esc(s.ko)}</span>` : ""}</li>`).join("");
+  `<li><span class="nm">${esc(s.name)}</span></li>`).join("");
 
 $("#contact").innerHTML =
   `<dt>E-mail</dt><dd><a href="mailto:${esc(CONF.email)}">${esc(CONF.email)}</a></dd>
