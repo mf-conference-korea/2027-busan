@@ -1090,6 +1090,16 @@ function route(){
 renderSpeakers(); renderProgram(); renderAbstracts();
 window.addEventListener("hashchange", route);
 route();
+
+/* ── visitor statistics ────────────────────────────────────────────── */
+window.goatcounter = {
+  path: () => location.pathname + "#" + document.querySelector(".view.on").id.slice(2)
+};
+window.addEventListener("hashchange", () => {
+  if (window.goatcounter.count) window.goatcounter.count();
+});
 </script>
+<script data-goatcounter="https://mf2027-busan.goatcounter.com/count"
+        async src="https://gc.zgo.at/count.js"></script>
 </body>
 </html>
