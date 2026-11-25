@@ -1,0 +1,567 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Around Grand Josun Busan · 2027 MF Busan</title>
+<script>(function(){try{var t=localStorage.getItem("theme");if(t==="dark"||t==="light")document.documentElement.setAttribute("data-theme",t);}catch(e){}})();</script>
+<link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lib/leaflet.css">
+<style>
+:root{
+  --ink:#1a1c1f; --muted:#555a63; --faint:#6f747d;
+  --rule:#d5d9df; --rule-soft:#e6e9ed;
+  --paper:#f3f5f7; --card:#ffffff; --tint:#eef1f5;
+  --accent:#17294d; --link:#0b5cad;
+  --shadow:0 1px 2px rgba(20,30,45,.05), 0 3px 12px rgba(20,30,45,.06);
+  --sans:"Source Sans 3","Helvetica Neue",Arial,"Apple SD Gothic Neo",sans-serif;
+  --sea:#d9e3ec; --route:#17294d; --pin:#17294d; --pin-ring:#ffffff; --label:#555a63; --halo:#f6f7f8;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --ink:#e8eaed; --muted:#a8adb5; --faint:#8b9098;
+    --rule:#3a3f47; --rule-soft:#2c3037;
+    --paper:#131518; --card:#1c1f24; --tint:#252930;
+    --accent:#101c36; --link:#8ab6ec;
+    --shadow:0 1px 2px rgba(0,0,0,.4), 0 3px 12px rgba(0,0,0,.35);
+    --sea:#0f151d; --route:#8ab6ec; --pin:#2f4f86; --pin-ring:#e8eaed; --label:#a8adb5; --halo:#1c1f24;
+  }
+}
+:root[data-theme="dark"]{
+  --ink:#e8eaed; --muted:#a8adb5; --faint:#8b9098;
+  --rule:#3a3f47; --rule-soft:#2c3037;
+  --paper:#131518; --card:#1c1f24; --tint:#252930;
+  --accent:#101c36; --link:#8ab6ec;
+  --shadow:0 1px 2px rgba(0,0,0,.4), 0 3px 12px rgba(0,0,0,.35);
+  --sea:#0f151d; --route:#8ab6ec; --pin:#2f4f86; --pin-ring:#e8eaed; --label:#a8adb5; --halo:#1c1f24;
+}
+:root[data-theme="light"]{color-scheme:light}
+:root[data-theme="dark"]{color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:17px/1.55 var(--sans)}
+.wrap{max-width:1120px;margin:0 auto;padding:16px}
+.back{margin:4px 0 12px;font-size:15.5px}
+.back a{color:var(--link);font-weight:600}
+
+section.blk{background:var(--card);border:1px solid var(--rule);border-radius:8px;box-shadow:var(--shadow);padding:20px 24px}
+section.blk h3{margin:0 0 6px;font-size:22px;font-weight:600}
+.lede{margin:0 0 12px;color:var(--muted)}
+
+.modes{display:inline-flex;margin:0 0 10px;border:1px solid var(--rule);border-radius:6px;overflow:hidden}
+.modes button{font:inherit;font-size:16px;padding:6px 18px;border:0;background:var(--card);color:var(--muted);cursor:pointer}
+.modes button+button{border-left:1px solid var(--rule)}
+.modes button[aria-pressed="true"]{background:var(--tint);color:var(--ink);font-weight:600}
+.modes button:focus-visible,.walks button:focus-visible{outline:2px solid var(--link);outline-offset:2px}
+.walks{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+.walks button[hidden]{display:none}
+.walks button{display:flex;align-items:center;gap:8px;font:inherit;font-size:16px;padding:6px 12px;
+  border:1px solid var(--rule);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer}
+.walks button[aria-pressed="true"]{border-color:var(--ink);font-weight:600;background:var(--tint)}
+.walks svg{flex:none}
+.walks .bm{color:var(--muted);font-size:14px;font-weight:400}
+.walks svg line{stroke:var(--route);stroke-width:4;stroke-linecap:round}
+.walks svg rect{fill:var(--card);stroke:var(--route);stroke-width:2}
+
+#map{height:min(62vh,520px);border:1px solid var(--rule);border-radius:6px;background:var(--sea)}
+@media (min-width:700px){#map{height:min(72vh,680px)}}
+/* 지도 색은 화면 설정이 아니라 낮/밤 탭을 따름 */
+#map.day-map{--sea:#d9e3ec;--route:#17294d;--pin:#17294d;--pin-ring:#ffffff;--label:#555a63;--halo:#f6f7f8}
+#map.night-map{--sea:#1d2c42;--route:#9cc4f5;--pin:#2f4f86;--pin-ring:#e8eaed;--label:#c4cad3;--halo:#323a48}
+.leaflet-container{font-family:var(--sans)}
+.leaflet-control-attribution{font-size:12px}
+.home-btn{display:flex!important;align-items:center;justify-content:center;color:#333}
+.leaflet-bar button.home-btn{width:30px;height:30px;padding:0;border:0;border-radius:4px;background:#fff;cursor:pointer}
+.leaflet-bar button.home-btn:hover{background:#f4f4f4}
+.leaflet-bar button.home-btn:focus-visible{outline:2px solid var(--link);outline-offset:1px}
+
+.route{stroke:var(--route);stroke-width:5;fill:none;stroke-linecap:round;stroke-linejoin:round;stroke-opacity:.9}
+.route.dash{stroke-dasharray:12 9}
+.route.dot{stroke-dasharray:1 10;stroke-width:6}
+.route.dashdot{stroke-dasharray:14 8 1 8}
+.route.dashdotdot{stroke-dasharray:14 7 1 7 1 7}
+.walk .safe{margin:0 0 6px;font-size:15px}
+.walk .safe a{color:var(--link)}
+.tip{margin:-4px 0 12px;font-size:15px;color:var(--muted)}
+.walk li.h a{color:var(--link)}
+
+.pin{display:flex;align-items:center;justify-content:center;min-width:26px;height:26px;padding:0 5px;border-radius:13px;
+     background:var(--pin);color:#fff;font:600 13px/1 var(--sans);border:2px solid var(--pin-ring);box-shadow:0 1px 3px rgba(0,0,0,.35)}
+.pin.hotel{min-width:30px;height:30px;border-radius:15px;font-size:15px}
+.pin.place{border-radius:5px;background:var(--pin-ring);color:var(--pin);border-color:var(--pin)}
+#map.far .stop-pin,#map.z12 .area.minor{display:none}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card);color:var(--ink);box-shadow:var(--shadow)}
+.leaflet-popup-content{margin:12px 14px;font:15px/1.45 var(--sans);max-width:260px}
+.leaflet-popup-content{max-height:calc(min(62vh,520px) - 90px);overflow-y:auto}  /* 소개 창이 지도보다 길면 창 안에서 스크롤 */
+.leaflet-popup-content h5{margin:0 0 4px;font-size:16px;font-weight:600}
+.leaflet-popup-content p{margin:0 0 6px}
+.leaflet-popup-content a{color:var(--link)}
+.leaflet-container a.leaflet-popup-close-button{color:var(--faint)}
+.pop-maps{color:var(--muted);font-size:14px}
+.pop-ph{margin:0 0 8px}
+.pop-ph img{display:block;width:260px;height:auto;aspect-ratio:3/2;border-radius:4px;background:var(--rule-soft)}
+.leaflet-popup-content .pop-ph figcaption{margin-top:3px;font-size:12px;line-height:1.35;color:var(--faint)}
+.leaflet-popup-content .pop-ph figcaption a{color:var(--faint)}
+.leaflet-popup-content p.pop-when{color:var(--muted);font-size:14px;margin:0 0 4px}
+.area{font:600 13px/1.2 var(--sans);color:var(--label);white-space:nowrap;text-align:center;
+      text-shadow:0 0 3px var(--halo),0 0 3px var(--halo),0 0 3px var(--halo)}
+.area small{display:block;font-weight:400;font-size:12px}
+
+#details{margin-top:14px}
+.hint{color:var(--faint);margin:0}
+.walk{padding:12px 0;border-top:1px solid var(--rule-soft)}
+.walk:first-child{border-top:0;padding-top:0}
+.walk h4{margin:0 0 2px;font-size:18px;font-weight:600}
+.walk .meta{margin:0 0 6px;color:var(--muted);font-size:15px}
+.walk .meta a{color:var(--link)}
+.walk ol{margin:0;padding:0;list-style:none}
+.walk li{display:flex;gap:8px;align-items:center;padding:4px 0;cursor:pointer}
+.walk .th{flex:none;width:72px;height:48px;border-radius:4px;object-fit:cover;background:var(--rule-soft)}
+.walk span.th{background:none}
+.walk li.h{cursor:default;color:var(--muted)}
+.walk .stop{all:unset;cursor:pointer}
+.walk .stop:focus-visible{outline:2px solid var(--link);outline-offset:2px;border-radius:2px}
+.walk li .tm{flex:none;width:6.2em;color:var(--muted);font-size:15px;font-variant-numeric:tabular-nums}
+.walk li b{font-weight:600;margin-right:4px}
+.walk li:hover .en{text-decoration:underline}
+.ko{color:var(--muted);font-size:15px}
+.foot-note{margin:12px 0 0;font-size:15px;color:var(--faint)}
+@media (max-width:700px){ section.blk{padding:16px} .walk .th{width:56px;height:37px} .walk li .tm{width:4.6em} }
+.credits{margin-top:6px;font-size:14px;color:var(--faint)}
+.credits summary{cursor:pointer}
+.credits ul{margin:6px 0 0;padding-left:18px}
+.credits a{color:var(--faint)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="back"><a href="../#venue">← Back to Venue</a></p>
+
+  <section class="blk">
+    <h3>Around Grand Josun Busan</h3>
+    <p class="lede">Walks from the conference hotel: three for the daytime and one for the evening, plus a few places a short walk away. Choose one or more to see them on the map, then tap a numbered stop for details and links.</p>
+    <p class="tip">Google Maps has limited navigation in Korea. For walking and public transport directions, use Naver Map or KakaoMap; each stop links to all three.</p>
+    <div class="modes" role="group" aria-label="Time of day"><button type="button" id="modeDay" aria-pressed="true">Day walks</button><button type="button" id="modeNight" aria-pressed="false">Night walks</button></div>
+    <div class="walks" id="walks"></div>
+    <div id="map" class="day-map" role="region" aria-label="Map of walks around Grand Josun Busan"></div>
+    <div id="details"></div>
+    <p class="foot-note">Compiled November 2026; routes and opening hours will be re-checked before the conference. Walking times are estimates at an easy pace (4 km/h) and do not include stops. Map data © <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors. Sources for each photo are listed under Photo credits.</p>
+    <details class="credits"><summary>Photo credits</summary><ul id="credits"></ul></details>
+  </section>
+
+</div>
+
+<script src="lib/leaflet.js"></script>
+<script src="tiles/index.js"></script>
+<script src="routes.js"></script>
+<script>
+const BOUNDS = [[35.1329, 129.105], [35.188, 129.2208]];  // 호텔 기준 대칭(북쪽 센텀시티, 동쪽 청사포) — 넓게 볼 때도 호텔이 가운데
+const WIDE = [[35.06, 129.04], [35.27, 129.25]];  // 12·13단계 넓은 배경(휴대폰에서 코스 전체 보기)
+const HOTEL = [35.16045, 129.16291];
+// 정류지: [영문, 한글, 위도, 경도, 지도 앱 검색어, 소개, 안내 링크]
+const DONGBAEK_URL = "https://www.haeundae.go.kr/board/view.do?boardId=BBS_0000437&dataSid=3094546&menuCd=DOM_000000301010000000&startPage=1";
+const BLUELINE_URL = "https://www.bluelinepark.com/eng/tourFacilityList.do";
+const GALMAET_URL = "https://www.busan.go.kr/galmaetgil/trip01";
+const NIGHT_URL = "https://www.busan.go.kr/galmaetgil/trip03/1697610";
+// 야경 코스 안전 안내
+const SAFE = "After dark: South Korea has a relatively low crime rate. Keep to lit paths and use licensed taxis. In an emergency call 112 (police) or 119 (ambulance); for travel help in English, call 1330 (Korea Travel Hotline, 24 hours).";
+const HAEUNDAE_NIGHT_URL = "https://www.haeundae.go.kr/index.do?menuCd=DOM_000000301013000000";
+const HAEWOL_URL = "https://www.busan.go.kr/news/hotissue/view?curPage=43&dataNo=72828";
+// 광안리에서 호텔까지 대중교통 길찾기(카카오맵)
+const BACK_PTS = encodeURI("광안리해수욕장,35.15187,129.11711/그랜드조선부산,35.16045,129.16291");
+const BACK_URL = "https://map.kakao.com/link/by/traffic/" + BACK_PTS, TAXI_URL = "https://map.kakao.com/link/by/car/" + BACK_PTS;
+const WALKS = [
+  { id: "dongbaek", letter: "D", style: "", dash: "",
+    en: "Dongbaek Island loop", ko: "동백섬 한 바퀴", kind: "round trip",
+    more: ["Dongbaek Island walking trail (Haeundae-gu, Korean)", DONGBAEK_URL],
+    stops: [
+      ["Coastal deck and suspension bridge", "해안 데크·출렁다리", 35.1550, 129.1546, "동백섬 출렁다리",
+       "A boardwalk along the rocky east shore of the island, with a short suspension bridge. There are steps along the way.",
+       ["Dongbaek Island walking trail (Korean)", DONGBAEK_URL]],
+      ["Lighthouse lookout", "등대 전망대", 35.15233, 129.15266, "동백섬 등대",
+       "A viewpoint near the lighthouse at the southern tip, looking across the bay to Gwangan Bridge.",
+       ["Dongbaek Island walking trail (Korean)", DONGBAEK_URL]],
+      ["Nurimaru APEC House", "누리마루 APEC하우스", 35.15235, 129.15137, "누리마루 APEC하우스",
+       "Built for the 2005 APEC leaders' meeting and now open to visitors. Check opening days before you go.",
+       ["Nurimaru visitor information", "https://www.busan.go.kr/nurimaru/english/Design/sub0201.jsp"]]
+    ] },
+  { id: "mipo", letter: "M", style: "dash", dash: "8 7",
+    en: "Mipo and the Green Railway", ko: "미포·그린레일웨이", kind: "there and back", double: true,
+    more: ["Haeundae Blueline Park", BLUELINE_URL],
+    stops: [
+      ["Mipo Station (Blueline Park)", "미포정거장", 35.15817, 129.17283, "해운대블루라인파크 미포정거장",
+       "The small harbour at the east end of Haeundae Beach, and the first station of the Blueline Park beach train. The Green Railway footpath starts here.",
+       ["Haeundae Blueline Park", BLUELINE_URL]],
+      ["Dalmaji Tunnel Station", "달맞이터널 정거장", 35.15560, 129.17719, "해운대블루라인파크 달맞이터널정거장",
+       "A beach train stop on the old coastal railway. The footpath beside the line continues to Haewol Skywalk.",
+       ["Haeundae Blueline Park", BLUELINE_URL]],
+      ["Haewol Skywalk", "해월전망대", 35.15572, 129.18281, "해월전망대",
+       "A U-shaped skywalk 22 m above the sea, with a glass floor and views back to Haeundae Beach and Gwangan Bridge. Opened in 2024; open until 9 pm in May and until 10 pm from June to August. Check the hours before you go.",
+       ["About Haewol Skywalk (Busan City, Korean)", HAEWOL_URL]]
+    ] },
+  { id: "gwangalli", letter: "G", style: "dot", dash: "1 8",
+    en: "Marine City to Gwangalli Beach", ko: "마린시티·광안리", kind: "one way",
+    back: ["By Metro Line 2 or taxi", BACK_URL, TAXI_URL],
+    more: ["Busan Galmaet-gil coastal trail (Korean)", GALMAET_URL],
+    stops: [
+      ["The Bay 101", "더베이101", 35.15654, 129.15203, "더베이101",
+       "A waterfront complex at the west end of Haeundae Beach, with night views of the Marine City towers.",
+       ["Busan night walks (Korean)", NIGHT_URL]],
+      ["Marine City seafront", "마린시티 해안길", 35.15357, 129.14655, "마린시티 영화의거리",
+       "A seafront promenade around Marine City, with views of Gwangan Bridge across the water.",
+       ["Busan night walks (Korean)", NIGHT_URL]],
+      ["Suyeong Bay Yacht Harbour", "수영만요트경기장", 35.15954, 129.14103, "수영만요트경기장",
+       "A marina on the Galmaet-gil coastal trail. The walk follows the waterfront path past the moorings.",
+       ["Busan Galmaet-gil coastal trail (Korean)", GALMAET_URL]],
+      ["Millak Bridge", "민락교", 35.16150, 129.13185, "민락교",
+       "The bridge across the mouth of the Suyeong River, with a footpath to Millak-dong.",
+       ["Busan Galmaet-gil coastal trail (Korean)", GALMAET_URL]],
+      ["Millak Waterside Park", "민락수변공원", 35.15530, 129.13308, "민락수변공원",
+       "A seaside park facing Gwangan Bridge, popular in the evening.",
+       ["Busan night walks (Korean)", NIGHT_URL]],
+      ["Gwangalli Beach", "광안리해수욕장", 35.15187, 129.11711, "광안리해수욕장",
+       "A beach facing Gwangan Bridge, which is lit up at night. To return, walk about 12 minutes to Geumnyeonsan Station and take Metro Line 2 to Haeundae Station, then walk about 10 minutes to the hotel. Or take a taxi.",
+       ["Directions to the hotel (KakaoMap, public transport)", BACK_URL]]
+    ] },
+  { id: "night", letter: "N", style: "dashdot", dash: "9 5 1 5",
+    en: "Night views on Dongbaek Island", ko: "야경: 더베이101·동백섬", kind: "round trip",
+    night: true, later: true,  // 누리마루→더베이101 저녁 통행·조명 현장 확인 뒤 공개
+    note: "Leave the hotel by 6:50 pm, so that you pass the steps on the island's east side in daylight and reach the lighthouse plaza before sunset (about 7:30 pm in early June).",
+    more: ["Haeundae's ten night views (Korean)", HAEUNDAE_NIGHT_URL],
+    stops: [
+      ["Lighthouse plaza", "동백섬 등대광장", 35.15233, 129.15266, "동백섬 등대",
+       "From the plaza by the lighthouse you look back across the water to the lights of Haeundae Beach and the LCT towers. Nurimaru APEC House and Gwangan Bridge are lit up on the other side. It is on Haeundae District's list of ten night views.",
+       ["Haeundae's ten night views (Korean)", HAEUNDAE_NIGHT_URL]],
+      ["The Bay 101 waterfront", "더베이101", 35.1564, 129.1514, "더베이101",
+       "Marine City's towers light up across the marina and are reflected in the water. The district's list also includes Marine City seen from the Dongbaek Island wharf. The Bay 101 has cafes and bars for a stop before the walk back.",
+       ["Haeundae's ten night views (Korean)", HAEUNDAE_NIGHT_URL]]
+    ] },
+  { id: "citynight", letter: "C", style: "dashdotdot", dash: "8 4 1 4 1 4",
+    en: "Night views at Marine City", ko: "야경: 더베이101·마린시티", kind: "there and back", double: true, night: true,
+    note: "Leave after sunset (about 7:30 pm in early June). The route follows the seafront promenade.",
+    more: ["Busan night walks (Korean)", NIGHT_URL],
+    stops: [
+      ["The Bay 101 waterfront", "더베이101", 35.1564, 129.1514, "더베이101",
+       "Marine City's towers light up across the marina and are reflected in the water.",
+       ["Busan night walks (Korean)", NIGHT_URL]],
+      ["Marine City seafront (Cinema Street)", "마린시티 영화의거리", 35.15555, 129.14158, "마린시티 영화의거리",
+       "The seafront promenade, known as Cinema Street, looks across the bay to Gwangan Bridge, lit up at night. Busan City's night-walk guide also recommends the yacht harbour at the end of Cinema Street, a short walk further on. Walk back the same way, or take a short taxi ride to the hotel.",
+       ["Busan night walks (Korean)", NIGHT_URL]]
+    ] }
+].filter(w => !w.later);
+// 사진: 위키미디어 공용(자유 이용 허가). [설명, 찍은 사람, 허가, 허가 링크, 원본 페이지, (다른 지점 사진을 쓸 때) 파일 이름]
+const PHOTOS = {
+  H: ["Grand Josun Busan", "Vanbasten 23", "CC BY-SA 3.0", "https://creativecommons.org/licenses/by-sa/3.0", "https://commons.wikimedia.org/wiki/File:Grand_Josun_Busan.jpg"],
+  D1: ["The suspension bridge on Dongbaek Island", "Mobius6", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "https://commons.wikimedia.org/wiki/File:Dongbaek_Island_Chulleong_Bridge_20200522_001.jpg"],
+  D2: ["The lighthouse on Dongbaek Island", "Mobius6", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "https://commons.wikimedia.org/wiki/File:Dongbaek_Island_20200522_019.jpg"],
+  D3: ["Nurimaru APEC House", "Mobius6", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "https://commons.wikimedia.org/wiki/File:Nurimaru_APEC_House_20200522_002.jpg"],
+  M1: ["Sky Capsule on the Blueline Park railway", "VN.NguyenDucDuy", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "https://commons.wikimedia.org/wiki/File:Sky_Capsule_train_at_Haeundae_Blueline_Park,_Busan.jpg"],
+  G1: ["Marine City at night from The Bay 101", "Photopmh", "CC BY-SA 3.0", "https://creativecommons.org/licenses/by-sa/3.0", "https://commons.wikimedia.org/wiki/File:%EB%B6%80%EC%82%B0_%EB%8D%94%EB%B2%A0%EC%9D%B4101.jpg"],
+  G2: ["Marine City from the seafront", "Brit in Seoul", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "https://commons.wikimedia.org/wiki/File:Marine_City,_Busan.jpg"],
+  G4: ["Centum City across the Suyeong River", "Prime number", "CC BY 4.0", "https://creativecommons.org/licenses/by/4.0", "https://commons.wikimedia.org/wiki/File:Centum_City,_Busan,_2014-12-28.jpg"],
+  G6: ["Gwangalli Beach and Gwangan Bridge", "Masterhatch", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "https://commons.wikimedia.org/wiki/File:Gwangalli_Beach_and_Gwangan_Bridge_Busan.jpg"],
+  N1: ["Haeundae Beach from the Dongbaek Island lighthouse at night", "군자삼락 (photo131)", "CC BY 4.0", "https://creativecommons.org/licenses/by/4.0/", "https://photo131.tistory.com/1404"]
+};
+PHOTOS.N2 = [...PHOTOS.G1.slice(0, 5), "G1"];
+PHOTOS.C1 = [...PHOTOS.G1.slice(0, 5), "G1"];
+PHOTOS.C2 = ["Gwangan Bridge from Marine City at night", "Jeena Paradies", "CC BY 2.0", "https://creativecommons.org/licenses/by/2.0/", "https://commons.wikimedia.org/wiki/File:Gwangan_Bridge_seen_Marine_City_at_Night_01.jpg"];
+PHOTOS.P1 = ["Haeundae Traditional Market", "bryan... (Flickr)", "CC BY-SA 2.0", "https://creativecommons.org/licenses/by-sa/2.0/", "https://commons.wikimedia.org/wiki/File:Haeundae_Market_Busan_(31877277538).jpg"];
+PHOTOS.P2 = ["A lane in Haeridan-gil", "Hyphen Group, Busan Tourism Organization (2024)", "KOGL Type 1", "https://www.kogl.or.kr/info/license.do", "https://www.visitbusan.net/archive/dataSearch/view.nm?dataSid=METADATA013376"];
+PHOTOS.P3 = ["A ray at SEA LIFE Busan Aquarium", "Ryan Bodenstein", "CC BY 2.0", "https://creativecommons.org/licenses/by/2.0/", "https://commons.wikimedia.org/wiki/File:Sea_Life_Busan_Aquarium_11.jpg"];
+PHOTOS.P4 = ["LCT Landmark Tower from Haeundae Beach", "Mobius6", "CC BY-SA 4.0", "https://creativecommons.org/licenses/by-sa/4.0", "https://commons.wikimedia.org/wiki/File:Haeundae_Beach_20200522_005.jpg"];
+const licLink = p => p[3] ? `<a href="${p[3]}" target="_blank" rel="noopener">${p[2]}</a>` : p[2];
+const AREAS = [
+  ["Dongbaek Island", "동백섬", 35.1515, 129.1470],
+  ["Marine City", "마린시티", 35.1575, 129.1445],
+  ["Suyeong Bay", "수영만", 35.1490, 129.1380],
+  ["Gwangan Bridge", "광안대교", 35.1442, 129.1250],
+  ["Haeundae Beach", "해운대해수욕장", 35.1570, 129.1610],
+  ["Dalmaji Hill", "달맞이언덕", 35.1610, 129.1800],
+  ["Cheongsapo", "청사포", 35.1622, 129.1912],
+  ["Centum City", "센텀시티", 35.1725, 129.1330]
+];
+
+// 확대는 정수 단계만: 소수 단계에서는 브라우저가 타일 사이에 가는 틈을 그림
+// 18단계는 17단계 그림을 두 배로 키워 보여 줌(경로·핀은 그대로 선명)
+const map = L.map("map", { maxBounds: BOUNDS, maxBoundsViscosity: 1, minZoom: 12, maxZoom: 18, zoomSnap: 1 });
+const ALL = L.latLngBounds([HOTEL, ...Object.values(window.ROUTES).flatMap(r => r.coords)]);
+function fitMin() {  // 배경 범위가 지도 칸을 거의 채우는 단계, 단 모든 코스가 한 화면에 들어오는 단계까지는 넓혀 볼 수 있게
+  const s = map.getSize(), px = bb => { const a = map.project(bb.getNorthEast(), 0), b = map.project(bb.getSouthWest(), 0); return [Math.abs(b.x - a.x), Math.abs(b.y - a.y)]; };
+  const [bx, by] = px(L.latLngBounds(BOUNDS)), [ax, ay] = px(ALL);
+  const inside = Math.round(Math.log2(Math.max(s.x / bx, s.y / by)));
+  const all = Math.floor(Math.log2(Math.min((s.x - 60) / ax, (s.y - 60) / ay)));
+  map.setMinZoom(Math.max(12, Math.min(inside, all) - 1));
+}
+fitMin();
+const START = L.latLngBounds([[HOTEL[0] - 0.0085, HOTEL[1] - 0.035], [HOTEL[0] + 0.0085, HOTEL[1] + 0.035]]);  // 처음 화면: 호텔이 가운데
+const startView = () => [HOTEL, Math.max(map.getMinZoom(), map.getBoundsZoom(START) - (map.getSize().x >= 700 ? 1 : 0))];  // 컴퓨터는 한 단계 넓게
+map.setView(...startView());
+map.on("resize", fitMin);
+map.attributionControl.setPrefix('<a href="https://leafletjs.com">Leaflet</a>');
+map.createPane("bg"); map.getPane("bg").style.zIndex = 200;
+
+let mode = "day", mapDark = false;  // 낮/밤 탭, 지도 밝기
+const darkFor = { day: false, night: true };  // 탭마다 지도 밝기 기억(처음엔 낮=밝게, 밤=어둡게)
+const shade = () => mapDark ? "night" : "day";
+
+// 새 A: 확대 단계별 타일 (512px 그림을 256px 칸에 넣어 고해상도 화면에서도 선명)
+const KEYS = new Set(window.TILE_KEYS);
+const PACKS = {};
+const pack = id => PACKS[id] || (PACKS[id] = fetch(`tiles/pack/${id}.json`)
+  .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+  .catch(e => { delete PACKS[id]; throw e; }));
+const LocalTiles = L.TileLayer.extend({
+  createTile(c, done) {
+    const img = document.createElement("img"), k = `${c.z}/${c.x}/${c.y}`, m = this.options.shade;
+    img.alt = ""; img.setAttribute("role", "presentation");
+    img.onload = () => done(null, img); img.onerror = e => done(e, img);
+    if (!KEYS.has(k)) img.src = `tiles/sea-${m}.webp`;
+    else pack(`${m}-${c.z}-${c.x >> 3}-${c.y >> 3}`).then(p => { img.src = "data:image/webp;base64," + p[k]; }, e => done(e, img));
+    return img;
+  }
+});
+const tiles = new LocalTiles("", { shade: shade(), pane: "bg", bounds: WIDE, minZoom: 12, maxZoom: 18,
+  minNativeZoom: 12, maxNativeZoom: 17, attribution: '© <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">OpenStreetMap</a> contributors' }).addTo(map);
+// 지도 밝기에 맞춰 배경·색·해/달 버튼 바꾸기
+let shadeBtn = null;
+function refreshShade() {
+  const el = document.getElementById("map");
+  el.classList.toggle("day-map", !mapDark); el.classList.toggle("night-map", mapDark);
+  if (shadeBtn) {
+    const t = mapDark ? "Switch to a light map" : "Switch to a dark map";
+    shadeBtn.title = t; shadeBtn.setAttribute("aria-label", t);
+    shadeBtn.innerHTML = mapDark ? SUN : MOON;
+  }
+  if (tiles.options.shade === shade()) return;
+  tiles.options.shade = shade(); tiles.redraw();
+}
+
+// 지명
+const MINOR_AREAS = new Set(["Dongbaek Island", "Marine City", "Suyeong Bay", "Haeundae Beach"]);  // 12단계에서는 숨김
+AREAS.forEach(([en, ko, lat, lon]) => L.marker([lat, lon], {
+  interactive: false, keyboard: false,
+  icon: L.divIcon({ className: "", html: `<div class="area${MINOR_AREAS.has(en) ? " minor" : ""}">${en}<small>${ko}</small></div>`, iconSize: [130, 34], iconAnchor: [65, 17] })
+}).addTo(map));
+
+// 누르면 뜨는 소개: 짧은 설명, 안내 링크, 지도 앱 링크
+function popupHtml(en, ko, lat, lon, q, about, link, when, key) {
+  const ext = 'target="_blank" rel="noopener"', k = encodeURIComponent(q), ph = PHOTOS[key];
+  return (ph ? `<figure class="pop-ph"><img src="photos/${ph[5] || key}.webp" alt="${ph[0]}" width="260" height="173">` +
+      `<figcaption>${ph[0]}. Photo: <a href="${ph[4]}" ${ext}>${ph[1]}</a>, ${licLink(ph)}, cropped</figcaption></figure>` : "") +
+    `<h5>${en} <span class="ko">${ko}</span></h5>` + (when ? `<p class="pop-when">${when}</p>` : "") + `<p>${about}</p>` +
+    (link ? `<p><a href="${link[1]}" ${ext}>${link[0]}</a></p>` : "") +
+    `<p class="pop-maps">Open in <a href="https://www.google.com/maps/search/?api=1&query=${lat},${lon}" ${ext}>Google Maps</a> · ` +
+    `<a href="https://map.naver.com/p/search/${k}" ${ext}>Naver Map</a> · <a href="https://map.kakao.com/?q=${k}" ${ext}>KakaoMap</a></p>`;
+}
+
+// 호텔
+const pinIcon = (txt, cls = "", dx = 0) => L.divIcon({ className: cls === "hotel" ? "" : "stop-pin", html: `<div class="pin ${cls}">${txt}</div>`, iconSize: [32, 30], iconAnchor: [16 - dx, 15] });
+L.marker(HOTEL, { icon: pinIcon("H", "hotel"), title: "Grand Josun Busan", zIndexOffset: 1000 })
+  .bindPopup(popupHtml("Grand Josun Busan", "그랜드 조선 부산", HOTEL[0], HOTEL[1], "그랜드조선부산",
+     "The conference hotel. All walks start from here.", ["Hotel website", "https://gjb.josunhotel.com"], "", "H"),
+     { offset: [0, -10] }).addTo(map);
+
+// 코스: 누른 코스만 지도에 표시, 여러 개 누르면 겹쳐 표시
+const on = new Set();
+const groups = {};
+const minutes = km => Math.max(5, Math.round(km / 4 * 60 / 5) * 5);  // 시속 4km, 5분 단위
+const fmt = m => m < 60 ? `${m} min` : `${Math.floor(m / 60)} h` + (m % 60 ? ` ${m % 60} min` : "");
+function kmTo(coords, lat, lon) {  // 호텔에서 경로를 따라 정류지에 가장 가까운 점까지의 거리
+  let acc = 0, at = 0, best = Infinity;
+  coords.forEach((c, i) => {
+    if (i) acc += map.distance(coords[i - 1], c);
+    const d = map.distance(c, [lat, lon]);
+    if (d < best) { best = d; at = acc; }
+  });
+  return at / 1000;
+}
+WALKS.forEach(w => {
+  const r = window.ROUTES[w.id];
+  w.km = w.double ? r.km * 2 : r.km;
+  const g = L.layerGroup();
+  L.polyline(r.coords, { className: "route " + w.style, interactive: false }).addTo(g);
+  w.mins = w.stops.map(([, , lat, lon]) => minutes(kmTo(r.coords, lat, lon)));
+  w.markers = w.stops.map(([en, ko, lat, lon, q, about, link], i) =>
+    L.marker([lat, lon], { icon: pinIcon(w.letter + (i + 1)), title: en })
+      .bindPopup(popupHtml(`${w.letter}${i + 1}. ${en}`, ko, lat, lon, q, about, link,
+        `About ${fmt(w.mins[i])} on foot from the hotel along this walk`, w.letter + (i + 1)), { offset: [0, -8] }).addTo(g));
+  w.bounds = L.latLngBounds(r.coords);
+  groups[w.id] = g;
+
+  const b = document.createElement("button");
+  b.setAttribute("aria-pressed", "false");
+  b.innerHTML = `<svg width="30" height="8" aria-hidden="true"><line x1="3" y1="4" x2="27" y2="4"${w.dash ? ` stroke-dasharray="${w.dash}"` : ""}/></svg>${w.en}<span class="bm">${w.km.toFixed(1)} km · ${fmt(minutes(w.km))} ${w.kind === "one way" ? "one way" : "round trip"}</span>`;
+  b.onclick = () => toggle(w, b);
+  b.hidden = !!w.night; w.btn = b;
+  document.getElementById("walks").appendChild(b);
+});
+
+// 호텔 근처 장소: 버튼으로 켜고 끔. 핀은 들어가는 입구, 시간은 호텔에서 편도(지도 데이터로 계산)
+const PLACES = [
+  ["Haeundae Market and Gunam-ro", "해운대전통시장·구남로", 35.16064, 129.16151, "해운대시장",
+   "A short market street with food stalls and small restaurants, good for a quick lunch or a snack. Gunam-ro, the wide pedestrian street beside it, runs from the beach up to the old Haeundae Station.", ["Haeundae Traditional Market (Visit Korea)", "https://english.visitkorea.or.kr/svc/whereToGo/locIntrdn/rgnContentsView.do?menuSn=459&vcontsId=84963"], 5],
+  ["Haeridan-gil", "해리단길", 35.16380, 129.15859, "해리단길",
+   "Lanes of cafés and small restaurants behind the old Haeundae Station building. Walk up Gunam-ro to the old station; the lanes start behind it.", ["Haeridan-gil (Visit Korea)", "https://english.visitkorea.or.kr/svc/contents/contentsView.do?menuSn=351&vcontsId=194958"], 10],
+  ["SEA LIFE Busan Aquarium", "씨라이프 부산아쿠아리움", 35.15919, 129.16102, "씨라이프 부산아쿠아리움",
+   "An indoor aquarium by Haeundae Beach, with sharks, penguins and otters. A good choice on a rainy day. Paid admission.", ["SEA LIFE Busan (official site)", "https://www.visitsealife.com/busan/en/"], 5],
+  ["Busan X the Sky", "부산엑스더스카이", 35.15993, 129.16979, "부산엑스더스카이",
+   "An observation deck on floors 98 to 100 of the 411 m LCT Landmark Tower, at the Mipo end of Haeundae Beach, looking over the beach and the city. Paid admission.", ["Busan X the Sky (official site)", "https://www.busanxthesky.com/xthesky/xthesky.php"], 15]
+];
+const placeGroup = L.layerGroup();
+let placesOn = false;
+const placeMarkers = PLACES.map(([en, ko, lat, lon, q, about, link, min], i) =>
+  L.marker([lat, lon], { icon: L.divIcon({ className: "place-pin", html: `<div class="pin place">P${i + 1}</div>`, iconSize: [32, 30], iconAnchor: [16, 15] }), title: en })
+    .bindPopup(popupHtml(`P${i + 1}. ${en}`, ko, lat, lon, q,
+      about + `</p><p><a href="https://map.kakao.com/link/by/walk/${encodeURI(`그랜드조선부산,${HOTEL[0]},${HOTEL[1]}/${q},${lat},${lon}`)}" target="_blank" rel="noopener">Walking directions from the hotel (KakaoMap)</a>`,
+      link, `About ${fmt(min)} on foot from the hotel, one way`, `P${i + 1}`), { offset: [0, -8] }).addTo(placeGroup));
+const placeBtn = document.createElement("button");
+placeBtn.setAttribute("aria-pressed", "false");
+placeBtn.innerHTML = `<svg width="30" height="14" aria-hidden="true"><rect x="9" y="1" width="12" height="12" rx="3"/></svg>Nearby places<span class="bm">${PLACES.length} places · ${Math.min(...PLACES.map(p => p[7]))} to ${Math.max(...PLACES.map(p => p[7]))} min on foot</span>`;
+placeBtn.onclick = () => {  // 코스를 보고 있으면 지도는 그대로, 아무 코스도 없으면 장소들이 보이게 맞춤
+  placesOn = !placesOn;
+  if (placesOn) placeGroup.addTo(map); else map.removeLayer(placeGroup);
+  placeBtn.setAttribute("aria-pressed", placesOn);
+  if (placesOn && !on.size) map.flyToBounds(L.latLngBounds([HOTEL, ...PLACES.map(p => [p[2], p[3]])]), { padding: [20, 20], maxZoom: 16 });
+  renderDetails();
+};
+document.getElementById("walks").appendChild(placeBtn);
+
+// 제자리로: 켜 둔 코스가 있으면 그 코스 전체, 없으면 처음 화면
+let pendingOpen = null;  // 장소로 이동한 뒤 열 소개 창(이동 중 제자리로를 누르면 취소)
+function fitView(animate = true) {
+  if (pendingOpen) { map.off("moveend", pendingOpen); pendingOpen = null; }
+  map.closePopup();
+  const opt = { padding: [30, 30], maxZoom: 16, animate };
+  if (!on.size) { map[animate ? "flyTo" : "setView"](...startView(), { animate }); return; }
+  const bb = L.latLngBounds([HOTEL]);
+  WALKS.filter(x => on.has(x.id)).forEach(x => bb.extend(x.bounds));
+  map[animate ? "flyToBounds" : "fitBounds"](bb, opt);
+}
+const HomeControl = L.Control.extend({
+  options: { position: "topleft" },
+  onAdd() {
+    const bar = L.DomUtil.create("div", "leaflet-bar");
+    const a = L.DomUtil.create("button", "home-btn", bar);
+    a.type = "button"; a.title = "Back to the full view"; a.setAttribute("aria-label", "Back to the full view");
+    a.innerHTML = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M2 7.5 8 2.5l6 5M3.8 6.2V13.5h3V10h2.4v3.5h3V6.2" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" stroke-linecap="round"/></svg>';
+    L.DomEvent.disableClickPropagation(bar);
+    L.DomEvent.on(a, "click", e => { L.DomEvent.preventDefault(e); fitView(); });
+    return bar;
+  }
+});
+new HomeControl().addTo(map);
+// 해/달: 지도를 밝게↔어둡게
+const MOON = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="M13 9.6A5.6 5.6 0 1 1 6.4 3a4.6 4.6 0 0 0 6.6 6.6z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>';
+const SUN = '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="2.8" fill="none" stroke="currentColor" stroke-width="1.6"/><path d="M8 1.5v1.6M8 12.9v1.6M1.5 8h1.6M12.9 8h1.6M3.4 3.4l1.1 1.1M11.5 11.5l1.1 1.1M3.4 12.6l1.1-1.1M11.5 4.5l1.1-1.1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>';
+const ShadeControl = L.Control.extend({
+  options: { position: "topleft" },
+  onAdd() {
+    const bar = L.DomUtil.create("div", "leaflet-bar");
+    shadeBtn = L.DomUtil.create("button", "home-btn", bar);
+    shadeBtn.type = "button";
+    L.DomEvent.disableClickPropagation(bar);
+    L.DomEvent.on(shadeBtn, "click", e => { L.DomEvent.preventDefault(e); mapDark = darkFor[mode] = !mapDark; refreshShade(); });
+    return bar;
+  }
+});
+new ShadeControl().addTo(map);
+refreshShade();
+
+// 켜 둔 코스들의 핀이 같은 자리(40m 안)에 겹치면 옆으로 나란히 놓기
+function spreadPins() {
+  const vis = WALKS.filter(w => on.has(w.id)).flatMap(w => w.markers.map((m, i) => ({ m, txt: w.letter + (i + 1) })));
+  const near = [];
+  vis.forEach(v => { const g = near.find(g => map.distance(g[0].m.getLatLng(), v.m.getLatLng()) < 40); g ? g.push(v) : near.push([v]); });
+  near.forEach(g => g.forEach((v, k) => {
+    const dx = k * 32;  // 처음 핀은 제자리, 다음 핀부터 오른쪽으로
+    v.m.setIcon(pinIcon(v.txt, "", dx)); v.m.getPopup().options.offset = [dx, -8];
+  }));
+}
+
+// 여러 코스를 넓게 볼 때는 번호 핀을 숨겨 경로가 보이게(확대하면 다시 보임)
+function updateFar() {
+  const el = document.getElementById("map"), z = map.getZoom();
+  el.classList.toggle("far", z < 14 && on.size > 1); el.classList.toggle("z12", z <= 12);
+}
+map.on("zoomend", updateFar); updateFar();
+
+function toggle(w, b, animate = true) {
+  if (on.has(w.id)) { on.delete(w.id); map.removeLayer(groups[w.id]); }
+  else { on.add(w.id); groups[w.id].addTo(map); }
+  b.setAttribute("aria-pressed", on.has(w.id));
+  spreadPins(); updateFar();
+  try { history.replaceState(null, "", on.size ? "#" + [...on].join("-") : location.pathname + location.search); } catch (e) {}
+  if (on.size) {
+    fitView(animate);
+  }
+  renderDetails();
+}
+
+// 시간표의 작은 사진(사진 없는 곳은 빈 칸으로 줄 맞춤)
+const thumb = key => PHOTOS[key] ? `<img class="th" src="photos/${PHOTOS[key][5] || key}.webp" alt="" width="72" height="48" loading="lazy">` : `<span class="th"></span>`;
+function renderDetails() {
+  const box = document.getElementById("details");
+  const list = WALKS.filter(w => on.has(w.id));
+  if (!list.length && !placesOn) { box.innerHTML = `<p class="hint">Choose a walk above to show its route and stops.</p>`; return; }
+  box.innerHTML = list.map(w => `
+    <div class="walk" data-id="${w.id}">
+      <h4>${w.en} <span class="ko">${w.ko}</span></h4>
+      <p class="meta">${w.km.toFixed(1)} km ${w.kind} from the hotel, about ${fmt(minutes(w.km))} on foot.${w.note ? " " + w.note : ""} · <a href="${w.more[1]}" target="_blank" rel="noopener">${w.more[0]}</a></p>${w.night ? `<p class="safe">${SAFE}</p>` : ""}
+      <ol>
+        <li class="h"><span class="tm">Start</span>${thumb("H")}<b>H</b><span>Grand Josun Busan</span></li>
+        ${w.stops.map(([en, ko], i) => `<li data-i="${i}"><span class="tm">${fmt(w.mins[i])}</span>${thumb(w.letter + (i + 1))}<b>${w.letter}${i + 1}</b><button type="button" class="stop"><span class="en">${en}</span> <span class="ko">${ko}</span></button></li>`).join("")}
+        ${w.kind === "one way" ? `<li class="h"><span class="tm">Return</span>${thumb("")}<b>H</b><span>${w.back[0]} · directions to the hotel: <a href="${w.back[1]}" target="_blank" rel="noopener">public transport</a>, <a href="${w.back[2]}" target="_blank" rel="noopener">car or taxi</a></span></li>` : `<li class="h"><span class="tm">${fmt(minutes(w.km))}</span>${thumb("")}<b>H</b><span>Back at the hotel</span></li>`}
+      </ol>
+    </div>`).join("") + (placesOn ? `
+    <div class="walk places">
+      <h4>Nearby places <span class="ko">호텔 근처</span></h4>
+      <p class="meta">Times are one way on foot from the hotel. Opening hours and prices change, so check before you go.</p>
+      <ol>
+        ${PLACES.map(([en, ko, , , , , , min], i) => `<li data-p="${i}"><span class="tm">${fmt(min)}</span>${thumb(`P${i + 1}`)}<b>P${i + 1}</b><button type="button" class="stop"><span class="en">${en}</span> <span class="ko">${ko}</span></button></li>`).join("")}
+      </ol>
+    </div>` : "");
+  const go = m => {
+    if (pendingOpen) map.off("moveend", pendingOpen);
+    pendingOpen = () => { pendingOpen = null; m.openPopup(); };
+    map.flyTo(m.getLatLng(), 16); map.once("moveend", pendingOpen);
+  };
+  box.querySelectorAll(".walk li[data-i]").forEach(li => li.onclick = () =>
+    go(WALKS.find(x => x.id === li.closest(".walk").dataset.id).markers[+li.dataset.i]));
+  box.querySelectorAll(".places li[data-p]").forEach(li => li.onclick = () => go(placeMarkers[+li.dataset.p]));
+}
+
+document.getElementById("credits").innerHTML = Object.entries(PHOTOS).filter(([k, p]) => !p[5] && (k === "H" || k[0] === "P" || WALKS.some(w => w.letter === k[0]))).map(([k, p]) =>
+  `<li>${k}. ${p[0]}: <a href="${p[4]}" target="_blank" rel="noopener">${p[1]}</a>, ${licLink(p)}, cropped</li>`).join("");
+
+// 주소 끝 #night 또는 #night-citynight 로 코스를 켠 채 열기 (파일로 열 때는 ?walks=night,citynight 도 됨)
+const q = new URLSearchParams(location.search);
+if (q.get("theme")) document.documentElement.dataset.theme = q.get("theme");
+const modeOf = w => w.night ? "night" : "day";
+const saved = { day: [], night: [] };  // 탭마다 켜 둔 코스를 기억했다가 돌아오면 다시 켜기
+function setMode(m, animate = true) {  // 다른 탭의 코스는 지도에서 내리고, 이 탭의 코스 버튼만 보이기
+  if (m === mode) return;
+  saved[mode] = [...on];
+  mode = m; mapDark = darkFor[m];
+  WALKS.forEach(w => { if (on.has(w.id) && modeOf(w) !== m) toggle(w, w.btn, false); w.btn.hidden = modeOf(w) !== m; });
+  document.getElementById("modeDay").setAttribute("aria-pressed", m === "day");
+  document.getElementById("modeNight").setAttribute("aria-pressed", m === "night");
+  refreshShade();
+  WALKS.forEach(w => { if (saved[m].includes(w.id) && !on.has(w.id)) toggle(w, w.btn, false); });
+  renderDetails(); fitView(animate);
+}
+document.getElementById("modeDay").onclick = () => setMode("day");
+document.getElementById("modeNight").onclick = () => setMode("night");
+function applyHash(animate) {  // 낮 코스가 하나라도 있으면 낮 탭, 야경 코스만 있으면 밤 탭
+  const want = (location.hash.slice(1) || q.get("walks") || "").split(/[-,]/), ws = WALKS.filter(w => want.includes(w.id));
+  if (ws.length) setMode(ws.some(w => !w.night) ? "day" : "night", animate);
+  WALKS.forEach(w => { if ((want.includes(w.id) && modeOf(w) === mode) !== on.has(w.id)) toggle(w, w.btn, animate); });
+}
+applyHash(false);
+addEventListener("hashchange", () => applyHash(true));
+renderDetails();
+// 주소 뒤 &open=D3 처럼 정류지 소개를 바로 열기
+const op = (q.get("open") || "").match(/^([DMGNC])(\d+)$/);
+if (op) { const w = WALKS.find(x => x.letter === op[1]), m = w && w.markers[+op[2] - 1]; if (m && on.has(w.id)) m.openPopup(); }
+</script>
+</body>
+</html>
